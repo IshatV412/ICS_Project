@@ -11,29 +11,28 @@ int bool_size = 0; // Number of currently stored variables
 struct boolean *bool_loc = NULL; // Pointer to dynamically allocated array
 
 // Structure to represent a boolean variable
-struct boolean {
+typedef struct boolean {
     char name[MAX_LENGTH]; // Name of the variable
     int value; // Boolean value (0 or 1)
     int scope; // Scope of the variable
-};
+}boolean;
 
 // int capacity = 1;  // Initial storage capacity
 // int size = 0;  // Number of currently stored variables
 // struct boolean *bool_loc = NULL; // Pointer to dynamically allocated array
 
 // Function to initialize storage
-void bool_init_storage(int capacity) {
-    bool_loc = (struct boolean*)malloc(capacity * sizeof(struct boolean));
+void bool_init_storage() {
+    bool_loc = (struct boolean*)malloc(bool_capacity * sizeof(struct boolean));
     if (bool_loc == NULL) {
         printf("Memory allocation failed\n");
-        ;
     }
 }
 
 // Function to double the storage capacity
-void bool_increase_capacity(int capacity) {
-    capacity *= 2;
-    struct boolean* temp = (struct boolean*)realloc(bool_loc, capacity * sizeof(struct boolean));
+void bool_increase_capacity() {
+    bool_capacity *= 2;
+    struct boolean* temp = (struct boolean*)realloc(bool_loc, bool_capacity * sizeof(struct boolean));
     if (temp == NULL) {
         printf("Memory reallocation failed\n");
         exit(1);
@@ -70,8 +69,8 @@ void bool_add_variable(char *name, int value, int scope) {
 }
 
 // Function to get a variable by name
-struct boolean* bool_get_variable(char *name, struct boolean *bool_loc, int size) {
-    for (int i = 0; i < size; i++) {
+struct boolean* bool_get_variable(char *name) {
+    for (int i = 0; i < bool_size; i++) {
         if (strcmp(bool_loc[i].name, name) == 0) {
             return &bool_loc[i];
         }
@@ -89,9 +88,9 @@ bool bool_xor(bool a, bool b) { return (((!a) && b) || ((!b) && a)); }
 bool bool_xnor(bool a, bool b) { return !xor(a, b); }
 
 // Function to read a boolean value from the user
-void bool_read_variable(char *name, int scope, struct boolean *bool_loc, int size, int capacity) {
+void bool_read_variable(boolean *bool_loc) {
     int value;
-    printf("Enter boolean value (0 or 1) for %s: ", name);
+    printf("Enter boolean value (0 or 1) for %s: ", bool_loc->name);
     scanf("%d", &value);
 
     // Validate input
@@ -100,52 +99,21 @@ void bool_read_variable(char *name, int scope, struct boolean *bool_loc, int siz
         return;
     }
 
-    bool_add_variable(name, value, scope);
-}
-
-// Function to print the value of a specific variable
-void bool_print_variable(char *name, struct boolean *bool_loc, int size) {
-    for (int i = 0; i < size; i++) {
-        if (strcmp(bool_loc[i].name, name) == 0) {
-            printf("Variable %s = %d\n", name, bool_loc[i].value);
-            return;
-        }
-    }
-    printf("Variable %s not found.\n", name);
+    bool_add_variable(bool_loc->name, value, scope);
 }
 
 // Function to update the value of an existing variable
-void bool_update_variable(char *name, int new_value, struct boolean *bool_loc, int size) {
+void bool_update_variable(boolean *bool_loc, int new_value) {
     if (new_value != 0 && new_value != 1) {
         printf("Error: Boolean values must be 0 or 1.\n");
         return;
     }
-
-    for (int i = 0; i < size; i++) {
-        if (strcmp(bool_loc[i].name, name) == 0) {
-            bool_loc[i].value = new_value;
-            printf("Updated %s to %d\n", name, new_value);
-            return;
-        }
-    }
-    printf("Variable %s not found.\n", name);
+    bool_loc->value = new_value;
 }
 
 // Function to delete a specific variable by name
-void bool_delete_variable(char *name, struct boolean *bool_loc, int size) {
-    int new_size = 0;
-    for (int i = 0; i < size; i++) {
-        if (strcmp(bool_loc[i].name, name) != 0) {
-            bool_loc[new_size] = bool_loc[i];
-            new_size++;
-        }
-    }
-    if (new_size == size) {
-        printf("Variable %s not found.\n", name);
-    } else {
-        size = new_size;
-        printf("Deleted variable %s.\n", name);
-    }
+void bool_delete_variable(boolean *bool_loc) {
+    free(bool_loc);
 }
 
 // Function to free memory allocated for variables of a specific scope
