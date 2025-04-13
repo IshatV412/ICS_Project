@@ -1,42 +1,68 @@
 #ifndef INT_LIST_H
 #define INT_LIST_H
 
-#define MAX_LENGTH 50
-
-// Structure to represent a dynamic list
+#define MAX_LIST_NAME 50
 typedef struct {
-    char name[MAX_LENGTH]; // Name of the list
-    char dtype;            // Data type (for future use)
-    int size;              // Size of the list
-    int *ptr;              // Pointer to dynamically allocated array
-} List;
+    char name[50];
+    int *value;
+    int size;
+    int capacity;
+    int scope;
+} intlist;
 
-// Initialization
-List* init(int arr_size);
-int* initialize(int *ptr, int arr_size, int val);
-int* clone(int *ptr, int arr_size);
 
-// Insert / Delete
-void insert(List *lst, int index, int val);
-void element_delete(List *lst, int index);
 
-// Search
-int getfirst(int *ptr, int arr_size, int val);
-int getlast(int *ptr, int arr_size, int val);
+// Initialize storage
+void init_intlist_storage();
 
-// Sort
-void bubbleSort(int *ptr, int size);
-void mergeSort(int *arr, int left, int right);
-void merge(int *arr, int left, int mid, int right);
+// Resize storage
+void increase_intlist_capacity();
 
-// Stats
-int sum(int *ptr, int size);
-int min(int *ptr, int size);
-int max(int *ptr, int size);
-float average(int *ptr, int size);
+// Add a new list
+void add_intlist_variable(const char *name, int size, int init_val, int scope);
+// Retrieve pointer by name and highest available scope
+intlist* get_intlist_variable(const char *name, int current_scope);
 
-// Utilities
-void removeDuplicates(List *lst);
-void display(int *ptr, int size);
+// Update value at index
+void update_intlist_element_ptr(intlist *lst, int index, int value);
+
+// Delete a variable
+void delete_intlist_variable_ptr(intlist *lst);
+
+// Display all variables
+void display_intlist_variables();
+
+// Free all variables of a scope
+void free_intlist_variables_by_scope(int scope);
+
+// Free all memory
+void free_all_intlist_memory();
+
+//Utility Functions
+
+void intlist_insert(intlist *lst, int index, int val);
+
+void intlist_delete(intlist *lst, int index);
+
+void intlist_remove_duplicates(intlist *lst) ;
+
+// Simple math/analytics
+int intlist_sum(int *arr, int size) ;
+
+int intlist_min(int *arr, int size);
+
+int intlist_max(int *arr, int size);
+
+float intlist_average(int *arr, int size);
+
+int intlist_getfirst(int *arr, int size, int val);
+
+int intlist_getlast(int *arr, int size, int val);
+
+void intlist_bubbleSort(int *arr, int size);
+
+void intlist_merge(int *arr, int left, int mid, int right);
+
+void intlist_mergeSort(int *arr, int left, int right);
 
 #endif // INT_LIST_H
