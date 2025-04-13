@@ -92,6 +92,7 @@ loop i from 1 to 5 {
 You can define and call functions with parameters and return values:  
 - `let func_name(parameters) generate ret_type { block }`
 - `call func_name(arguments)|`
+
 Example:
 ```c  
 let add(a as integer, b as integer) generate integer {
@@ -108,19 +109,20 @@ Perform operations on linked lists:
 Example:  
 ```c
 list(insert, index, value) | //inserts a node at given position and assigns the value
-list(get,index) | //returns the value at the given index
+x = list(get,index) | //returns the value at the given index
 list(set,index,value) | //sets the value provided at the given index
 list(sort) | //sorts the linked list
 ```
 
 ### 7. Dictionary Operations
 Perform operations on dictionaries:
-- Insert, Delete, Set values 
+- Insert, Delete, Set , Get values
 Example:  
 ```c
 dict{insert, key, value} | //insert a key-value pair
 dict{delete, key} | //delete a given key
 dict{set,key,value} | //change the value at a given key
+x = dict{get,key} | //returns the value at a given key
 ```
 
 ### 8. Input/Output
