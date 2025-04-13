@@ -16,14 +16,20 @@ decimal *dec_loc = NULL;
 // Initialize float storage
 void init_float_storage() {
     dec_loc = (decimal*)malloc(float_capacity * sizeof(decimal));
-    if (dec_loc == NULL) exit(1);
+    if (dec_loc == NULL){
+        printf("Memory not allocated."); // sync error msg with other files
+        exit(1);
+    };
 }
 
 // Increase capacity when needed
 void increase_float_capacity() {
     float_capacity *= 2;
     decimal* temp = (decimal*)realloc(dec_loc, float_capacity * sizeof(decimal));
-    if (temp == NULL) exit(1);
+    if (temp == NULL){
+        printf("Memory not allocated.");// sync error msg with other files
+        exit(1);
+    };
     dec_loc = temp;
 }
 
@@ -31,6 +37,7 @@ void increase_float_capacity() {
 void add_float_variable(char *name, float value, int scope) {
     for (int i = 0; i < float_size; i++) {
         if (strcmp(dec_loc[i].name, name) == 0 && dec_loc[i].scope == scope) {
+            printf("Variable with same name exists within this scope already.");
             exit(1); // same name and scope not allowed
         }
     }
@@ -63,6 +70,7 @@ void update_float_variable(decimal *var, float new_value) {
     if (var != NULL) {
         var->value = new_value;
     } else {
+        printf("Segmentation Fault");
         exit(1);
     }
 }
@@ -72,13 +80,17 @@ void print_float_variable(decimal *var) {
     if (var != NULL) {
         printf("Variable %s = %f\n", var->name, var->value);
     } else {
+        printf("Segmentation Fault");
         exit(1);
     }
 }
 
 // Delete using pointer
 void delete_float_variable(decimal *var) {
-    if (var == NULL) exit(1);
+    if (var == NULL){
+        printf("Segmentation Fault");
+        exit(1);
+    };
 
     int found = 0;
     for (int i = 0; i < float_size; i++) {
@@ -93,6 +105,7 @@ void delete_float_variable(decimal *var) {
     if (found) {
         float_size--;
     } else {
+        printf("Variable doesn't exist.");
         exit(1);
     }
 }
@@ -132,7 +145,10 @@ float float_add(float a, float b) { return a + b; }
 float float_subtract(float a, float b) { return a - b; }
 float float_multiply(float a, float b) { return a * b; }
 float float_divide(float a, float b) {
-    if (b == 0) exit(1);
+    if (b == 0){
+        printf("Division by 0 not allowed.");
+        exit(1);
+    };
     return a / b;
 }
 float float_power(float a, float b) {
