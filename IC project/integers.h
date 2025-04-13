@@ -17,7 +17,7 @@ void int_delete_variable(int_var *var);
 void int_free_scope(int scope);
 void int_free_all();
 void int_display_variables();
-void int_add_variable(const char *name, int scope, int value);
+void int_add_variable(char *name, int scope, int value);
 int int_add(int a, int b);
 int int_subtract(int a, int b);
 int int_multiply(int a, int b);
