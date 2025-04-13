@@ -3,20 +3,6 @@
 #include <string.h>
 #include "linked_list.h"
 
-struct node {
-    int value;
-    struct node* ptr_next;
-};
-
-//struct for linked list 
-typedef struct {
-    char name[50];
-    int length;
-    int scope;
-    struct node* head_ptr; //pointer to the head node
-    struct node* tail_ptr; //pointer to the tail node
-} linked_list;
-
 int LL_capacity;
 int LL_size;
 linked_list** LL_Loc;
