@@ -80,10 +80,6 @@ void update_char_variable(character *var, char new_value) {
         printf("Error: Invalid variable pointer provided for update.\n");
         exit(1);
     }
-    if (!is_letter(new_value)) {
-        printf("Error: New value must be a valid letter.\n");
-        exit(1);
-    }
     var->value = new_value;
 }
 
