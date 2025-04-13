@@ -1,0 +1,149 @@
+# Custom Language Project
+
+## Overview
+The language supports variable declarations, arithmetic operations, conditional statements, loops, functions, and data structures like linked lists and dictionaries. It uses a parser built with Bison to generate an Abstract Syntax Tree (AST), which is then executed to evaluate expressions and perform operations.
+
+---
+
+## Setup Instructions
+### Requirements
+Ensure you have the following installed:
+- GCC compiler 
+- Bison and Flex 
+
+Installing Bison and Flex
+1. For Windows (using MSYS2)
+Download MSYS2 : https://www.msys2.org/ \
+Open MSYS2 MinGW 64-bit terminal and run:\
+`pacman -S mingw-w64-x86_64-bison mingw-w64-x86_64-flex`
+
+2. For Linux \
+Run the following command:\ 
+`sudo apt install bison flex`
+
+3. For macOS (Using HomeBrew)\
+`brew install bison flex`
+
+### Build Instructions
+Run the following commands to build the project:
+`bison -d b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.y` # Generates parser files (b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.c and b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.h)
+`flex b24cs1053_b24me1034_b24cm1054_b24ci1017_lexer.l` # Generates lexer file (b24cs1053_b24me1034_b24cm1054_b24ci1017_lex.yy.c)
+`gcc -o run b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.c b24cs1053_b24me1034_b24cm1054_b24ci1017_lex.yy.c b24cs1053_b24me1034_b24cm1054_b24ci1017_interpreter.c -lfl -ly` 
+
+
+### Run Instructions
+To execute a program written in your custom language:
+`./run < b24cs1053_b24me1034_b24cm1054_b24ci1017_main.cmm`
+
+## Features
+### 1. Variable Declaration
+You can declare variables of various types:
+- `create <identifier> as <type> |`  
+  Example:  
+`create x as int |`
+`create name as string |`
+`create list as linkedlist(5) |`
+`create dict as dictionary of integer |`
+
+### 2. Arithmetic Operations
+Supports basic arithmetic operations:
+- Addition (`+`), Subtraction (`-`), Multiplication (`*`), Division (`/`), Modulus (`%`) |  
+Example:  
+`x = 5 + 3 * 4 |`
+
+Copy
+
+### 3. Conditional Statements
+Supports `if-then` and `if-then-else` blocks:  
+Example:  
+`if (x > 10) then {`
+`    show("Greater than 10") |`
+`} else {`
+`    show("Less than or equal to 10") |`
+`}`
+
+
+### 4. Loops
+Supports both `while` loops and `for` loops:  
+Example:  
+`while (x < 10) {`
+`    x = x + 1 |`
+`}`
+
+
+`loop i from 1 to 5 {`
+`    show("%d",i) |`
+`}`
+
+### 5. Functions
+You can define and call functions with parameters and return values:  
+Example:
+```c  
+let add(a as integer, b as integer) generate integer {
+return a + b |
+}
+```
+```c
+call add(5, 3) |
+```
+
+### 6. Linked List Operations
+Perform operations on linked lists:
+- Insert, Delete, Sort, Set values |  
+Example:  
+```c
+list(insert, index, value) |
+list(get,index) |
+list(set,index,value) |
+list(sort) |
+```
+
+### 7. Dictionary Operations
+Perform operations on dictionaries:
+- Insert, Delete, Set values |  
+Example:  
+```c
+dict{insert, key, value} |
+dict{delete, key} |
+```
+
+### 8. Input/Output
+- `show`: Prints messages or variables to the console |
+- `ask`: Accepts input from the user |
+
+---
+
+## How It Works
+### 1. Parsing
+The language uses Bison to parse the input program into an Abstract Syntax Tree (AST). The grammar rules are defined in `parser.y`, which includes:
+- Tokens for keywords like `if`, `while`, etc |
+- Rules for statements (`var_dec`, `assignment`, etc) |
+- Operator precedence for arithmetic and logical operations |
+
+### 2. Abstract Syntax Tree (AST)
+The AST is constructed using nodes defined in the `tree.h` file. Each node represents a specific operation or statement in the program |
+
+### 3. Execution
+The AST is traversed recursively to evaluate expressions or execute statements using the `evaluate()` function |
+
+---
+
+## Project Structure
+.
+├── parser.y # Bison grammar file defining syntax rules |
+├── lexer.l # Flex lexer file for tokenizing input |
+├── tree.h # Header file defining AST node structure |
+├── tree.c # C file implementing AST creation and traversal |
+├── main.c # Main program to parse and execute input |
+├── README.md # Documentation file (this file) |
+└── examples/ # Example programs written in the custom language |
+
+---
+
+## Error Handling
+The parser handles syntax errors gracefully by printing an error message:
+syntax error: unexpected token '<token>' |
+
+Runtime errors such as division by zero are also handled explicitly |
+
+---
