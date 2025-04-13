@@ -73,7 +73,7 @@ int yylex();
 //defining all the tokens used by the lexer
 %token IF THEN ELSE RETURN CREATE AS OF SHOW ASK LOOP FROM TO WHILE NEXT LEAVE LET GENERATE CALL AND OR 
 %token INSERT SET GET SEARCH SORT DELETE RUN
-%token PLUS MINUS MULT DIV PERCENT ASSIGN EQ NEQ GT LT GTE LTE 
+%token PLUS MINUS MULT DIV PERCENT ASSIGN EQ NEQ GT LT GTE LTE POW
 %token LBRACE RBRACE LPAREN RPAREN EOL COMMA AMPERSAND LSQUARE RSQUARE
 
 //defining all the nodes of the tree
@@ -91,7 +91,7 @@ int yylex();
 //defining the precedence order for operations 
 %left OR
 %left AND
-%left EQ NEQ LT LTE GT GTE
+%left EQ NEQ LT LTE GT GTE POW
 %left '+' '-'
 %left '*' '/'
 %right '='
@@ -146,7 +146,6 @@ var_dec: CREATE IDENTIFIER AS INT_TYPE                  {$$ = createNode("VAR_DE
        | CREATE IDENTIFIER AS STRING_TYPE               {$$ = createNode("VAR_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),NULL,NULL);}
        | CREATE IDENTIFIER AS FLOAT_TYPE                {$$ = createNode("VAR_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),NULL,NULL);} 
        | CREATE IDENTIFIER AS LIST_TYPE LPAREN exp RPAREN     {$$ = createNode("LIST_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),$6,NULL);} 
-       | CREATE IDENTIFIER AS POINTER                   {$$ = createNode("VAR_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),NULL,NULL);} 
        | CREATE IDENTIFIER AS LINKEDLIST LPAREN exp RPAREN    {$$ = createNode("LL_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),$6,NULL);} 
        | CREATE IDENTIFIER AS DICTIONARY OF INT_TYPE    {$$ = createNode("DICT_DEC",$2,createNode("DATATYPE",$6,NULL,NULL,NULL),NULL,NULL);}
        | CREATE IDENTIFIER AS DICTIONARY OF CHAR_TYPE   {$$ = createNode("DICT_DEC",$2,createNode("DATATYPE",$6,NULL,NULL,NULL),NULL,NULL);}
@@ -185,9 +184,7 @@ assignment:
 //all the expressions that could be possible in the language
 exp
   : IDENTIFIER                                 { $$ = createNode("VAR", $1, NULL, NULL, NULL); }
-  | IDENTIFIER LSQUARE exp RSQUARE             { $$ = createNode("INDEX", $1, $3, NULL, NULL); }
-  | AMPERSAND IDENTIFIER                       { $$ = createNode("ADDRESS", $2, NULL, NULL, NULL); }  
-  | MULT IDENTIFIER                            { $$ = createNode("DEREFERENCE", $2, NULL, NULL, NULL); }  
+  | IDENTIFIER LSQUARE exp RSQUARE             { $$ = createNode("INDEX", $1, $3, NULL, NULL); }  
   | INTEGER                                    { char buf[20]; sprintf(buf, "%d", $1); $$ = createNode("INT", buf, NULL, NULL, NULL); }
   | CHAR                                       { char buf[5]; sprintf(buf, "%c", $1); $$ = createNode("CHAR", buf, NULL, NULL, NULL); }
   | FLOAT                                      { char buf[50]; sprintf(buf, "%f", $1); $$ = createNode("FLOAT", buf, NULL, NULL, NULL); }
@@ -198,6 +195,7 @@ exp
   | exp DIV exp                                { $$ = createNode("DIV", NULL, $1, $3, NULL); }
   | exp PERCENT exp                            { $$ = createNode("MOD", NULL, $1, $3, NULL); }
   | exp AND exp                                { $$ = createNode("AND", NULL, $1, $3, NULL); }
+  | exp POW exp                                { $$ = createNode("POWER",NULL, $1, $3, NULL); } 
   | exp OR exp                                 { $$ = createNode("OR", NULL, $1, $3, NULL); }
   | exp LT exp                                 { $$ = createNode("LT", NULL, $1, $3, NULL); }
   | exp LTE exp                                { $$ = createNode("LTE", NULL, $1, $3, NULL); }
@@ -223,7 +221,7 @@ dict_operations: IDENTIFIER LBRACE INSERT COMMA exp COMMA exp RBRACE  {$$ = crea
 
 
 if_statement: IF LPAREN exp RPAREN THEN block               {$$ = createNode("IF",NULL,$3,$6,NULL);}
-            | IF LPAREN exp RPAREN THEN block ELSE block    {$$ = createNode("IF-ELSE",NULL,$3,$6,$8);}
+            | IF LPAREN exp RPAREN THEN block ELSE block    {$$ = createNode("IF-ELSE",NULL,createNode("IFF",NULL,$3,$6,NULL),$8,NULL);}
 ;
 
 block: LBRACE statement_list RBRACE { $$ = $2; }
