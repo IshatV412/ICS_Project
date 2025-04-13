@@ -106,25 +106,6 @@ float eval_expr(struct treeNode* ptr){
     return 0; // fallback
 }
 
-//Boolean
-struct boolean* bool_loc;
-int bool_capacity = 1;  // Initial storage capacity
-int bool_size = 0;  // Number of currently stored variables
-bool_loc = NULL;
-// bool_init_storage(bool_loc, bool_capacity);
-
-// Character
-int *char_capacity;
-int *char_size;
-character **char_loc = NULL;
-init_char_storage(char_loc, char_capacity, char_size);
-// Dictionary
-// Float
-// int_list
-// integers
-// linked_list
-// string
-
 int executeTree(struct treeNode* root, int scope) { //scope starts at 0
 
     struct treeNode* ptr = root;
@@ -168,10 +149,37 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "SHOW") == 0) {
-
+            struct treeNode* ptr1 = ptr->left;
+            char c[1000] = ptr->left->value;
+            for(int i=0; c[i]!='\0';i++){
+                if(c[i]=='\\' && c[i+1]=='n'){
+                    printf("\n");
+                    i++;
+                }
+                else if(c[i]=='\\' && c[i+1]=='t'){
+                    printf("\t");
+                    i++;
+                }
+                else if(c[i]=='%' && c[i+1] == 'd'){
+                    printf("%d", (get_int_var(ptr1,scope))->int_value);
+                    ptr1 = ptr1->next;
+                }
+                else if(c[i]=='%' && c[i+1] == 'f'){
+                    printf("%f", (get_float_variable(ptr1,scope))->value);
+                    ptr1 = ptr1->next;
+                }
+                else if(c[i]=='%' && c[i+1] == 'c'){
+                    printf("%c", (get_char_variable(ptr1,scope))->value);
+                    ptr1 = ptr1->next;
+                }
+                else{
+                    printf("%c",c[i]);
+                }
+            }
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASK") == 0) {
+            //
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASSIGN") == 0) {
