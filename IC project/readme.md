@@ -58,7 +58,8 @@ Example:
 ### 3. Conditional Statements
 Supports `if-then` and `if-then-else` blocks:  
 - `if (exp) then { block }`
-- `if (exp) then { block } else { block }` 
+- `if (exp) then { block } else { block }`
+
 Example:
 ```c  
 if (x > 10) then {
@@ -71,6 +72,9 @@ if (x > 10) then {
 
 ### 4. Loops
 Supports both `while` loops and `for` loops:  
+- `while (condition) { block }`
+- `loop variable from start to end { block }`
+
 Example: 
 ```c 
 while (x < 10) {
@@ -86,6 +90,8 @@ loop i from 1 to 5 {
 
 ### 5. Functions
 You can define and call functions with parameters and return values:  
+- `let func_name(parameters) generate ret_type { block }`
+- `call func_name(arguments)|`
 Example:
 ```c  
 let add(a as integer, b as integer) generate integer {
@@ -101,10 +107,10 @@ Perform operations on linked lists:
 - Insert, Delete, Sort, Set values  
 Example:  
 ```c
-list(insert, index, value) |
-list(get,index) |
-list(set,index,value) |
-list(sort) |
+list(insert, index, value) | //inserts a node at given position and assigns the value
+list(get,index) | //returns the value at the given index
+list(set,index,value) | //sets the value provided at the given index
+list(sort) | //sorts the linked list
 ```
 
 ### 7. Dictionary Operations
@@ -112,8 +118,9 @@ Perform operations on dictionaries:
 - Insert, Delete, Set values 
 Example:  
 ```c
-dict{insert, key, value} |
-dict{delete, key} |
+dict{insert, key, value} | //insert a key-value pair
+dict{delete, key} | //delete a given key
+dict{set,key,value} | //change the value at a given key
 ```
 
 ### 8. Input/Output
