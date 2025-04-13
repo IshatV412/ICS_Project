@@ -27,7 +27,9 @@ Run the following command:\
 ### Build Instructions
 Run the following commands to build the project:
 `bison -d b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.y` # Generates parser files (b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.c and b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.h)
+
 `flex b24cs1053_b24me1034_b24cm1054_b24ci1017_lexer.l` # Generates lexer file (b24cs1053_b24me1034_b24cm1054_b24ci1017_lex.yy.c)
+
 `gcc -o run b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.c b24cs1053_b24me1034_b24cm1054_b24ci1017_lex.yy.c b24cs1053_b24me1034_b24cm1054_b24ci1017_interpreter.c -lfl -ly` 
 
 
@@ -39,41 +41,48 @@ To execute a program written in your custom language:
 ### 1. Variable Declaration
 You can declare variables of various types:
 - `create <identifier> as <type> |`  
-  Example:  
-`create x as int |`
-`create name as string |`
-`create list as linkedlist(5) |`
-`create dict as dictionary of integer |`
+  Example: 
+```c 
+create x as int |
+create name as string |
+create list as linkedlist(5) |
+create dict as dictionary of integer |
+```
 
 ### 2. Arithmetic Operations
 Supports basic arithmetic operations:
 - Addition (`+`), Subtraction (`-`), Multiplication (`*`), Division (`/`), Modulus (`%`) |  
 Example:  
-`x = 5 + 3 * 4 |`
+`x = (5 + 3) * 4 |`
 
 Copy
 
 ### 3. Conditional Statements
 Supports `if-then` and `if-then-else` blocks:  
-Example:  
-`if (x > 10) then {`
-`    show("Greater than 10") |`
-`} else {`
-`    show("Less than or equal to 10") |`
-`}`
+Example:
+```c  
+if (x > 10) then {
+    show("Greater than 10") |
+} else {
+    show("Less than or equal to 10") |
+}
+```
 
 
 ### 4. Loops
 Supports both `while` loops and `for` loops:  
-Example:  
-`while (x < 10) {`
-`    x = x + 1 |`
-`}`
+Example: 
+```c 
+while (x < 10) {
+    x = x + 1 |
+}
+```
 
-
-`loop i from 1 to 5 {`
-`    show("%d",i) |`
-`}`
+```c
+loop i from 1 to 5 {
+    show("%d",i) |
+}
+```
 
 ### 5. Functions
 You can define and call functions with parameters and return values:  
@@ -89,7 +98,7 @@ call add(5, 3) |
 
 ### 6. Linked List Operations
 Perform operations on linked lists:
-- Insert, Delete, Sort, Set values |  
+- Insert, Delete, Sort, Set values  
 Example:  
 ```c
 list(insert, index, value) |
@@ -100,7 +109,7 @@ list(sort) |
 
 ### 7. Dictionary Operations
 Perform operations on dictionaries:
-- Insert, Delete, Set values |  
+- Insert, Delete, Set values 
 Example:  
 ```c
 dict{insert, key, value} |
@@ -108,8 +117,8 @@ dict{delete, key} |
 ```
 
 ### 8. Input/Output
-- `show`: Prints messages or variables to the console |
-- `ask`: Accepts input from the user |
+- `show`: Prints messages or variables to the console 
+- `ask`: Accepts input from the user 
 
 ---
 
