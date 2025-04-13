@@ -1,5 +1,5 @@
-#ifndef DICTIONARY_H
-#define DICTIONARY_H
+#ifndef B24CS1053_B24ME1034_B24CM1054_B24CI1017_DICTIONARY_H
+#define B24CS1053_B24ME1034_B24CM1054_B24CI1017_DICTIONARY_H
 
 typedef struct node_C_C{
     char *key; //address of key
