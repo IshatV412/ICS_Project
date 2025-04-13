@@ -11,14 +11,20 @@ character *char_loc = NULL;
 // Function to initialize storage
 void init_char_storage() {
     char_loc = (character*)malloc(char_capacity * sizeof(character));
-    if (char_loc == NULL) exit(1);
-}
+    if (char_loc == NULL) {
+        printf("Character Vector Storage Allocation Failed.\n");
+        exit(1);
+    }    
+}    
 
 // Function to resize storage when needed
 void increase_char_capacity() {
     char_capacity *= 2;
     character* temp = (character*)realloc(char_loc, char_capacity * sizeof(character));
-    if (temp == NULL) exit(1);
+    if (temp == NULL) {
+        printf("Character memory reallocation failed.\n");
+        exit(1);
+    }    
     char_loc = temp;
 }
 
@@ -30,6 +36,9 @@ character* get_char_variable(char *name, int scope) {
                 latest = &char_loc[i];
             }
         }
+    }
+    if (latest == NULL) {
+        printf("No such string with name:%s found\n",name);
     }
     return latest;
 }
