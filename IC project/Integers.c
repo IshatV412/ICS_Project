@@ -60,11 +60,11 @@ int_var* get_int_var(char *name, int scope) {
 void int_add_variable(int_var *new_var) {
     if (new_var == NULL || strlen(new_var->int_name) == 0) {
         printf("Error: Invalid variable provided.\n");
-        return;
+        exit(1);
     }
     if (int_get_var(new_var->int_name, new_var->int_scope)) {
         printf("Error: Variable %s already exists in scope %d!\n", new_var->int_name, new_var->int_scope);
-        return;
+        exit(1);
     }
     if (int_size == int_capacity) {
         int_increase_capacity();
@@ -112,7 +112,6 @@ void int_delete_variable(int_var *var) {
             int_loc[i] = int_loc[i + 1];
         }
         int_size--;
-        printf("Deleted variable.\n");
     }
 }
 
@@ -125,7 +124,6 @@ void int_free_scope(int scope) {
         }
     }
     int_size = new_size;
-    printf("Variables with scope %d have been removed.\n", scope);
 }
 
 // Free all memory
