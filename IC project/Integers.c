@@ -19,6 +19,10 @@ void int_init_storage() {
 }
 
 void int_increase_capacity() {
+    if (int_loc == NULL) {
+        printf("Error: Attempt to resize uninitialized storage.\n");
+        exit(1);
+    }
     int_capacity *= 2;
     int_var *temp = (int_var*)realloc(int_loc, int_capacity * sizeof(int_var));
     if (temp == NULL) {
