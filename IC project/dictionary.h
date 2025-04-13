@@ -10,6 +10,7 @@ typedef struct node_C_C{
 typedef struct{
     char name[50];
     int len; //len of dictionary as of now
+    int scope;
     node_C_C *start; //stores the address of the first location of the dictionary
 }dictionary_C_C;
 
