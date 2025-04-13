@@ -20,8 +20,24 @@ void increase_dict_capacity(dictionary_C_C** dict_storage, int* capacity) {
     }
     *dict_storage = temp;
 }
-dictionary_C_C* get_Dict_C_C(dictionary_C_C** dict_storage,int* size, char* name, int len, int scope) {
+dictionary_C_C* get_linked_list(dictionary_C_C** dict_storage, int* dict_size, char* name, int scope) {
+    if (dict_size == NULL || name == NULL) {
+        printf("Invalid storage or name.\n");
+        return NULL;
+    }
+    dictionary_C_C* latest = NULL;
 
+    for (int i = 0; i < *dict_size; i++) {
+        if ((strcmp(dict_storage[i]->name, name) == 0) && dict_storage[i]->scope <= scope ) {
+            if (latest == NULL || dict_storage[i]->scope > latest->scope) {
+                latest = dict_storage[i];
+            }
+        }
+    }
+    if (latest == NULL) {
+        printf("Linked list with name \"%s\" not found.\n", name);
+    }
+    return latest;
 }
 
 void increase_len(dictionary_C_C *dict, int len){
