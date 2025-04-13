@@ -22,6 +22,8 @@ void increase_len(dictionary_C_C *dict, int len);
 
 dictionary_C_C* create_dictionary_C_C(int len, char name[50],int *size, int* capacity, dictionary_C_C **dict_storage, int scope);
 
+dictionary_C_C* get_linked_list(dictionary_C_C** dict_storage, int* dict_size, char* name, int scope);
+
 void insert_C_C(dictionary_C_C *dict, char *key, char *value);
 
 char* getvalue_C_C(dictionary_C_C *dict, char *key);
