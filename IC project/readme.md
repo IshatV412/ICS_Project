@@ -59,16 +59,17 @@ create dict as dictionary of integer |
 ```
 
 ### 2. Arithmetic Operations
-Supports basic arithmetic operations:
+- Supports basic arithmetic operations:
 - Addition (`+`), Subtraction (`-`), Multiplication (`*`), Division (`/`), Modulus (`%`) , Power (`**`)
 Example:  
 `x = ((5**2) + 3) * 4 |`
 
 ### 3. Logical Operations
-Supports basic logical operations:
+- Supports basic logical operations:
 - Equality (`==`), Inequality (`!=`), Greater (`>`), Greater or Equal (`=`), Lesser (`<`), Lesser or Equal (`<=`), Logical AND (`and`), Logical OR (`or`)
 
 Example:
+
 `if (((x==4) or (x>=3)) and ((x<7) or (x<=1))) ...`
 
 ### 4. Conditional Statements
@@ -77,6 +78,7 @@ Supports `if-then` and `if-then-else` blocks:
 - `if (exp) then { block } else { block }`
 
 Example:
+
 ```c  
 if (x > 10) then {
     show("Greater than 10") |
@@ -87,7 +89,7 @@ if (x > 10) then {
 
 
 ### 5. Loops
-Supports both `while` loops and `for` loops:  
+- Supports both `while` loops and `for` loops:  
 - `while (condition) { block }`
 - `loop variable from start to end { block }`
 
@@ -104,14 +106,15 @@ loop i from 1 to 5 {
 }
 ```
 ### 6. Next and Leave statements
-You can use `next` to skip the current iteration of the loop and `leave` to break out of the loop.
+- You can use `next` to skip the current iteration of the loop and `leave` to break out of the loop.
 
 ### 7. Functions
-You can define and call functions with parameters and return values:  
+- You can define and call functions with parameters and return values:  
 - `let func_name(parameters) generate ret_type { block }`
 - `call func_name(arguments)|`
 
 Example:
+
 ```c  
 let add(a as integer, b as integer) generate integer {
 return a + b |
@@ -122,9 +125,11 @@ call add(5, 3) |
 ```
 
 ### 8. Linked List Operations
-Perform operations on linked lists:
+- Perform operations on linked lists:
 - Insert, Delete, Sort, Set values  
+
 Example:  
+
 ```c
 list(insert, index, value) | //inserts a node at given position and assigns the value
 x = list(get,index) | //returns the value at the given index
@@ -133,9 +138,11 @@ list(sort) | //sorts the linked list
 ```
 
 ### 9. Dictionary Operations
-Perform operations on dictionaries:
+- Perform operations on dictionaries:
 - Insert, Delete, Set , Get values
+
 Example:  
+
 ```c
 dict{insert, key, value} | //insert a key-value pair
 dict{delete, key} | //delete a given key
