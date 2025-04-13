@@ -9,17 +9,44 @@ typedef struct {
     int scope;                      // Scope of the string
 } string;
 
-// Initialization and Memory Management
-string* init_string_storage(int *capacity, int *size);
-string* increase_string_capacity(string *str_loc, int *capacity);
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "string.h"
+#define MAX_STRING_LENGTH 50  // Maximum allowed string length
 
-// Add string
-void add_string(string **str_loc, int *size, int *capacity, const char *value, int scope);
+int string_capacity = 1;
+int string_size = 0;
+string *string_loc = NULL;
 
-// Display stored strings
-void display_strings(string *str_loc, int size);
+// Initialize string storage
+void init_string_storage();
 
-// Free strings by scope
-void free_string_variables(string *str_loc, int *size, int scope);
+// Resize string storage
+void increase_string_capacity();
+
+// Add new string variable
+void add_string_variable(const char *name, const char *value, int scope);
+
+// Find string variable by name and highest available scope
+string* get_string_variable(const char *name, int current_scope);
+
+// Update string value using pointer
+void update_string_variable_ptr(string *var, const char *new_value);
+
+// Print string value using pointer
+void print_string_variable_ptr(string *var);
+
+// Delete a variable using pointer
+void delete_string_variable_ptr(string *var);
+
+// Display all variables
+void display_string_variables();
+
+// Free all variables of a specific scope
+void free_string_variables_by_scope(int scope);
+
+// Free all memory
+void free_all_string_memory();
 
 #endif // STRING_H
