@@ -3,6 +3,7 @@
 
 #define MAX_NAME_LENGTH 50
 
+//structure for each node of linked list
 struct node {
     int value;
     struct node* ptr_next;
@@ -38,7 +39,7 @@ void empty_list(linked_list* list);
 void sort_list(linked_list* list);
 void print_values(linked_list* list);
 void print_list(linked_list* list);
-linked_list* get_linked_list(linked_list_vector* vector,char* name);
+linked_list* get_linked_list(linked_list** storage, int size, char* name);
 
 
 // Test function
