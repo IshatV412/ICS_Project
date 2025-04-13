@@ -11,9 +11,7 @@ typedef struct {
 void int_init_storage();
 void int_increase_capacity();
 int_var* int_get_var(char *name, int scope);
-int_var* int_get_var_by_name(char *name);
 void int_add_variable(int_var *new_var);
-void int_read_variable(int_var *var);
 void int_update_variable(int_var *var, int new_value);
 void int_print_variable(int_var *var);
 void int_delete_variable(int_var *var);
