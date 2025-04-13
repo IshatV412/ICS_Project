@@ -2,20 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
-    char int_name[50];
-    int int_value;
-    int int_scope;
-} int_var;
-
 int int_capacity = 1;
 int int_size = 0;
 int_var *int_loc = NULL;
 
 void int_init_storage() {
+    if (int_loc != NULL) {
+        printf("Error: Storage already initialized.\n");
+        exit(1);
+    }
     int_loc = (int_var*)malloc(int_capacity * sizeof(int_var));
     if (int_loc == NULL) {
-        printf("Memory allocation failed\n");
+        printf("Error: Memory allocation failed\n");
         exit(1);
     }
 }
@@ -24,7 +22,7 @@ void int_increase_capacity() {
     int_capacity *= 2;
     int_var *temp = (int_var*)realloc(int_loc, int_capacity * sizeof(int_var));
     if (temp == NULL) {
-        printf("Memory reallocation failed\n");
+        printf("Error : Memory reallocation failed\n");
         exit(1);
     }
     int_loc = temp;
