@@ -60,10 +60,6 @@ void add_char_variable(char *name, char value, int scope) {
         printf("Error: Variable name cannot be NULL or empty.\n");
         exit(1);
     }
-    if (!is_letter(value)) {
-        printf("Error: Value must be a valid letter.\n");
-        exit(1);
-    }
     if (char_size == char_capacity) {
         increase_char_capacity();
     }
