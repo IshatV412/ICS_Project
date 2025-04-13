@@ -1,7 +1,36 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include"dictionary.h"
+#include "dictionary.h"
+
+void initialise_dict_storage(dictionary_C_C** dict_storage,int* dict_capacity, int* dict_size) {
+    *dict_capacity = 1;
+    *dict_size = 0;
+    *dict_storage = (dictionary_C_C*)malloc((*dict_capacity) * sizeof(dictionary_C_C*));
+    if (*dict_storage == NULL) {
+        exit(1);
+    }
+}
+
+void increase_dict_capacity(dictionary_C_C** dict_storage, int* capacity) {
+    *capacity *= 2;
+    dictionary_C_C* temp = realloc(*dict_storage,(*capacity) * sizeof(dictionary_C_C));
+    if (temp == NULL) {
+        exit(1);
+    }
+    *dict_storage = temp;
+}
+
+void add_dictionary(dictionary_C_C** dict_storage,int* size, int* capacity, char* name, int len, int scope) {
+    if (*size == *capacity) {
+        increase_dict_capacity(dict_storage,capacity);
+    }
+    strcpy((*dict_storage)[*size].name, name);
+    (*dict_storage)[*size].len = len;
+    (*dict_storage)[*size].scope = scope;
+    (*size)++;
+}
+
 
 void increase_len(dictionary_C_C *dict, int len){
     node_C_C *node = dict->start; //putting node at start
@@ -30,7 +59,7 @@ dictionary_C_C* create_dictionary_C_C(int len, char name[50]){
     return dict; //returning the address of dict
 }
 
-int insert_C_C(dictionary_C_C *dict, char *key, char *value){
+void insert_C_C(dictionary_C_C *dict, char *key, char *value){
     node_C_C *node = dict->start;
     while(node != NULL && node->key != NULL){ //either there is an empty node, or all nodes are full
         if(node != NULL){
@@ -38,7 +67,7 @@ int insert_C_C(dictionary_C_C *dict, char *key, char *value){
                 if(strcmp(node->key,key)==0){
                     free(node->value);
                     node->value = strdup(value);
-                    return 1;
+                    return;
                 }
             }
         }
