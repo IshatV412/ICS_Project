@@ -31,7 +31,7 @@ void bool_increase_capacity() {
 }
 
 // Add a new boolean variable (ensures unique name in scope)
-void bool_add_variable(const char *name, int value, int scope) {
+void bool_add_variable(char *name, int value, int scope) {
     if (value != 0 && value != 1) {
         printf("Error: Boolean values must be 0 or 1.\n");
         exit(1);
@@ -56,7 +56,7 @@ void bool_add_variable(const char *name, int value, int scope) {
 }
 
 // Get variable by name and scope
-boolean* bool_get_variable(const char *name, int scope) {
+boolean* bool_get_variable(char *name, int scope) {
     for (int i = 0; i < bool_size; i++) {
         if (strcmp(bool_loc[i].name, name) == 0 && bool_loc[i].scope == scope) {
             return &bool_loc[i];
@@ -75,7 +75,7 @@ bool bool_xor(bool a, bool b)  { return (a && !b) || (!a && b); }
 bool bool_xnor(bool a, bool b) { return !(a ^ b); }
 
 // Update existing variable's value
-void bool_update_variable(const char *name, int scope, int new_value) {
+void bool_update_variable(char *name, int scope, int new_value) {
     if (new_value != 0 && new_value != 1) {
         printf("Error: Boolean values must be 0 or 1.\n");
         return;
@@ -90,7 +90,7 @@ void bool_update_variable(const char *name, int scope, int new_value) {
 }
 
 // Delete a boolean variable by name and scope
-void bool_delete_variable(const char *name, int scope) {
+void bool_delete_variable(char *name, int scope) {
     for (int i = 0; i < bool_size; i++) {
         if (strcmp(bool_loc[i].name, name) == 0 && bool_loc[i].scope == scope) {
             // Shift remaining elements
