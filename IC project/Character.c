@@ -24,7 +24,7 @@ void init_char_storage() {
 // Function to resize storage when needed
 void increase_char_capacity() {
     if (char_loc == NULL) {
-        printf("Error: Attempt to resize uninitialized storage.\n"):
+        printf("Error: Attempt to resize uninitialized storage.\n");
         exit(1);
     }
     char_capacity *= 2;
@@ -84,7 +84,7 @@ void update_char_variable(character *var, char new_value) {
         printf("Error: New value must be a valid letter.\n");
         exit(1);
     }
-    var->value = new_value
+    var->value = new_value;
 }
 
 // Function to print variable via pointer
@@ -151,8 +151,8 @@ void delete_char_variable(character *var) {
     else {
         printf("Error: Variable not found in storage.\n");
         exit(1);
+    }
 }
-
 // Function to display all stored variables
 void display_char_variables() {
     if (char_size == 0) {
@@ -170,6 +170,6 @@ void free_char_memory() {
       free(char_loc);
       }
     else {
-        printf(`already freed`)
+        printf("already freed");
       }
 }
