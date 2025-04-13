@@ -43,14 +43,13 @@ character* get_char_variable(char *name, int scope) {
     return latest;
 }
 // Function to add a new character variable and return its pointer
-character* add_char_variable(char *name, char value, int scope) {
+void add_char_variable(char *name, char value, int scope) {
     if (char_size == char_capacity) {
         increase_char_capacity();
     }
     strcpy(char_loc[char_size].name, name);
     char_loc[char_size].value = value;
     char_loc[char_size].scope = scope;
-    return &char_loc[char_size++];
 }
 
 // Function to update value via pointer
