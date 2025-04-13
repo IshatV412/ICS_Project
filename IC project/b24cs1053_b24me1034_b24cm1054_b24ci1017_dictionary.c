@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "dictionary.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_dictionary.h"
 
 int dict_capacity = 1; // Initial storage capacity
 int dict_size = 0; // Number of currently stored dictionaries
