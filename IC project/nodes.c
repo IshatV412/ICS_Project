@@ -23,25 +23,25 @@ struct treeNode{
     struct treeNode* next; //next statement in the sequence
 };
 //function to create a node for the tree
-struct treeNode* createNode(char type[], char value[], struct treeNode* left, struct treeNode* right, struct treeNode* next) {
-    struct treeNode* newNode = (struct treeNode*)malloc(sizeof(struct treeNode));
-    if (newNode == NULL) {
-        fprintf(stderr,"Memory Allocation Failed\n");
-        exit(1);
-    }
-    strncpy(newNode->type,type,20);
-    if (value) {
-        strncpy(newNode->value,value,50);
-    }
-    else {
-        newNode->value[0] = '\0';
-    }
-    newNode->left = left;
-    newNode->right = right;
-    newNode->next = next;
+// struct treeNode* createNode(char type[], char value[], struct treeNode* left, struct treeNode* right, struct treeNode* next) {
+//     struct treeNode* newNode = (struct treeNode*)malloc(sizeof(struct treeNode));
+//     if (newNode == NULL) {
+//         fprintf(stderr,"Memory Allocation Failed\n");
+//         exit(1);
+//     }
+//     strncpy(newNode->type,type,20);
+//     if (value) {
+//         strncpy(newNode->value,value,50);
+//     }
+//     else {
+//         newNode->value[0] = '\0';
+//     }
+//     newNode->left = left;
+//     newNode->right = right;
+//     newNode->next = next;
 
-    return newNode;
-}
+//     return newNode;
+// }
 
 struct treeNode* gotonode(struct treeNode* root, struct treeNode* ptr, int depth){
     ptr = root;
@@ -75,7 +75,7 @@ float eval_expr(struct treeNode* ptr){
     float right = eval_exptr(ptr->right);
 
     // update functionality from file 
-           if (strcmp(ptr->type, "ADD") == 0) {
+    if (strcmp(ptr->type, "ADD") == 0) {
        return left + right;
     } else if (strcmp(ptr->type, "SUB") == 0) {
         return left-right;
@@ -125,18 +125,14 @@ init_char_storage(char_loc, char_capacity, char_size);
 // linked_list
 // string
 
-
-void executeTree(struct treeNode* root) {
+int executeTree(struct treeNode* root, int scope) { //scope starts at 0
 
     struct treeNode* ptr = root;
     int current_depth = 0;// determines the level of the tree where i am at.
-    int scope=0;// scope is incremented everytime block is encountered and vice versa
+    //int scope=0;// scope is incremented everytime block is encountered and vice versa
 
-    while (ptr != NULL) {
-        if (strcmp(ptr->type, "PROGRAM") == 0) {
-            ptr = ptr->left;
-        }
-        else if (strcmp(ptr->type, "VAR_DEC") == 0) {
+    if (ptr != NULL) {
+        if (strcmp(ptr->type, "VAR_DEC") == 0) {
             if (strcmp(ptr->value, "IDENTIFIER") == 0) {
                 if (strcmp(ptr->left, "exp") == 0) {
                     // check inside all the struct vectors if there is a variable name that matches
@@ -147,63 +143,57 @@ void executeTree(struct treeNode* root) {
             } else {
                 // ask how to handle statements
             }
-            ptr = ptr->next;
+            executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "LIST_DEC") == 0) {
-            ptr = ptr->next;
+            executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "LL_DEC") == 0) {
-            ptr = ptr->next;
+            executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "DICT_DEC") == 0) {
-            ptr = ptr->next;
+            executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "SHOW") == 0) {
-            ptr = ptr->next;
+            executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASK") == 0) {
-            ptr = ptr->next;
+            executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASSIGN") == 0) {
-            ptr = ptr->next;
+            executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "IF") == 0) {
-            ptr = ptr->left;
-            float val = eval_expr(ptr);
-            gotonode(root, ptr, current_depth);
+            float val = eval_expr(ptr->left);
+            //gotonode(root, ptr, current_depth);
             if (val){
-                ptr = ptr->right;
-                executeTree(ptr);
-                gotonode(root, ptr, current_depth);
-                ptr = ptr->next;
+                if(!executeTree(ptr->right,scope++)){
+                    executeTree(ptr->next,scope);
+                }
+                //gotonode(root, ptr, current_depth);
             }
+            executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "IF-ELSE") == 0) {
             // evaluate condition, then either left or right block
-            ptr = ptr->left;
-            float val = eval_expr(ptr);
-            gotonode(root, ptr, current_depth);
+            float val = eval_expr(ptr->left);
+            //gotonode(root, ptr, current_depth);
             if (val){
-                ptr = ptr->right;
-                executeTree(ptr);
-                gotonode(root, ptr, current_depth);
-                ptr = ptr->next;
+                if(!executeTree(ptr->right,scope++)){
+                    executeTree(ptr->next,scope);
+                }
+                //gotonode(root, ptr, current_depth);
             }
             else{
-                ptr = ptr->next;
-                executeTree(ptr);
-                ptr = ptr->next;
+                //else ki bt
+                executeTree(ptr,scope);
             }
         }
         else if (strcmp(ptr->type, "WHILE") == 0) {
-            // use gotonode to loop while evaluating condition and executing block
-            ptr = ptr->left;
-            float val = eval_expr(ptr);
+            float val = eval_expr(ptr->left);
             if (val){
-                executeTree(ptr);
-                gotonode(root, ptr, current_depth);
-                current_depth--;
-            } 
+                executeTree(ptr->right,scope++);
+            }
         }
         else if (strcmp(ptr->type, "FOR") == 0) {
             ptr = ptr->left;
@@ -221,16 +211,15 @@ void executeTree(struct treeNode* root) {
             ptr = ptr->next;
         }
         else if (strcmp(ptr->type, "NEXT") == 0) {
-            ptr = ptr->next;
+            executeTree(ptr->next,scope--);
 
         }
         else if (strcmp(ptr->type, "LEAVE") == 0) {
-            ptr = ptr->next;
+            return 1;
         }
         else if (strcmp(ptr->type, "FUNC_DEC") == 0) {
             struct Function newFunc;
             strncpy(newFunc.name, ptr->value, MAX_VAR_LENGTH);
-        
             struct treeNode* funcData = ptr->left;   // This contains FUNC_DATA and RET_TYPE
             newFunc.body = ptr->right;               // Function body (block) is in the right field
         
@@ -244,7 +233,7 @@ void executeTree(struct treeNode* root) {
             }
         
             functionTable[functionCount++] = newFunc;
-            ptr = ptr->next;
+            executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "RETURN") == 0) {
             if (ptr->left != NULL) {
@@ -287,7 +276,7 @@ void executeTree(struct treeNode* root) {
         
             // Execute function body
             hasReturned = 0;
-            executeTree(calledFunc->body);
+            executeTree(calledFunc->body,scope);
         
             // Optionally use returnValue here
             float result = returnValue;
