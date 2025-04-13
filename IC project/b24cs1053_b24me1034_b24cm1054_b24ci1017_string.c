@@ -8,14 +8,14 @@ int string_size = 0;
 string *string_loc = NULL;
 
 // Initialize string storage
-/*void init_string_storage() {
+void init_string_storage() {
     string_loc = (string*) malloc(string_capacity * sizeof(string));
     if (string_loc == NULL) {
         //printf("Memory allocation failed\n");
         exit(1);
     }
 }
-*/
+
 // Resize string storage
 void increase_string_capacity() {
     string_capacity *= 2;
