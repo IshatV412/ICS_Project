@@ -5,7 +5,8 @@
 
 // Structure to represent a string variable
 typedef struct {
-    char chars[MAX_STRING_LENGTH];  // Character array for storing the string
+    char name[MAX_STRING_LENGTH];
+    char value[MAX_STRING_LENGTH];  // Character array for storing the string
     int scope;                      // Scope of the string
 } string;
 
