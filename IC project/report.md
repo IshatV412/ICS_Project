@@ -6,7 +6,7 @@
 ## Introduction
 
 ### Objective
-- Designing a custom language named C-- with pseud-code syntax
+- Designing a custom language named C-- with pseudo-code syntax
 - Implementing a tic tac toe game where users play against a bot
 
 ### Key Features
