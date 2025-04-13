@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include"integers.h"
 int int_capacity = 1;
 int int_size = 0;
 int_var *int_loc = NULL;
@@ -44,8 +44,8 @@ int_var* get_int_var(char *name, int scope) {
     }
     int_var* latest = NULL;
     for (int i = 0; i < int_size; i++) {
-        if (strcmp(int_loc[i].name, name) == 0 && int_loc[i].scope <= scope) {
-            if (latest == NULL || int_loc[i].scope > latest->scope) {
+        if (strcmp(int_loc[i].int_name, name) == 0 && int_loc[i].int_scope <= scope) {
+            if (latest == NULL || int_loc[i].int_scope > latest->int_scope) {
                 latest = &int_loc[i];
             }
         }
