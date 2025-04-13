@@ -133,34 +133,60 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
 
     if (ptr != NULL) {
         if (strcmp(ptr->type, "VAR_DEC") == 0) {
-            if (strcmp(ptr->value, "IDENTIFIER") == 0) {
-                if (strcmp(ptr->left, "exp") == 0) {
-                    // check inside all the struct vectors if there is a variable name that matches
-                    // return no 
-                } else {
-                    // write code for ll_get
-                }
-            } else {
-                // ask how to handle statements
+            if(strcmp(ptr->left->type, "integer") == 0) {
+                //int_add_variable(ptr->left->value, 0, scope);
+            } else if (strcmp(ptr->left->type, "float") == 0) {
+                // Initialize float variable
+                add_float_variable(ptr->left->value, 0.00, scope);
+                // Store in the appropriate data structure
+            } else if (strcmp(ptr->left->type, "character") == 0) {
+                // Initialize character variable
+                add_char_variable(ptr->left->value, 'a', scope);
             }
-            executeTree(ptr->next,scope);
-        }
-        else if (strcmp(ptr->type, "LIST_DEC") == 0) {
-            executeTree(ptr->next,scope);
-        }
-        else if (strcmp(ptr->type, "LL_DEC") == 0) {
-            executeTree(ptr->next,scope);
-        }
-        else if (strcmp(ptr->type, "DICT_DEC") == 0) {
+            else if (strcmp(ptr->left->type, "boolean") == 0) {
+                // Initialize boolean variable
+                bool_add_variable(ptr->left->value, 0, scope);
+                // Store in the appropriate data structure
+            }
+            else if (strcmp(ptr->left->type, "string") == 0) {
+                // Initialize string variable
+                char *s = "a";
+                //add_string_variable(s,s,scope);
+                // Store in the appropriate data structure
+            }
+            else if (strcmp(ptr->left->type, "list") == 0) {
+                add_intlist_variable(ptr->left->value, ptr->right, 0, scope);
+            }
+            else if (strcmp(ptr->left->type, "dictionary") == 0) {
+                add_dict_C_C(1, ptr->value, scope);
+            }
+            else if (strcmp(ptr->left->type, "linkedlist") == 0) {
+                // Initialize linked list variable
+                // Store in the appropriate data structure
+            }
+            
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "SHOW") == 0) {
+
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASK") == 0) {
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASSIGN") == 0) {
+            if(strcmp(ptr->left->type,"INDEX")==0){
+                update_intlist_element_ptr(get_intlist_variable(ptr->left->value,scope), ptr->left->left, ptr->right);
+            }
+            else if(strcmp(ptr->left->type,"LL_GET")==0){
+                int_update_variable(get_int_var(ptr->value,scope),read_node(get_list_by_name_scope(ptr->left->value,scope),ptr->left->left));
+            }
+            else if(strcmp(ptr->left->type,"CALL")==0){
+                //call
+            }
+            else{
+                int_update_variable(get_int_var(ptr->value,scope),eval_expr(ptr->left));
+            }
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "IF") == 0) {
@@ -175,40 +201,26 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "IF-ELSE") == 0) {
-            // evaluate condition, then either left or right block
-            float val = eval_expr(ptr->left);
-            //gotonode(root, ptr, current_depth);
-            if (val){
+            if(eval_expr(ptr->left->left) == 1){
+                if(!executeTree(ptr->left->right,scope++)){
+                    executeTree(ptr->next,scope);
+                }
+            }
+            else{
                 if(!executeTree(ptr->right,scope++)){
                     executeTree(ptr->next,scope);
                 }
-                //gotonode(root, ptr, current_depth);
-            }
-            else{
-                //else ki bt
-                executeTree(ptr,scope);
             }
         }
         else if (strcmp(ptr->type, "WHILE") == 0) {
             float val = eval_expr(ptr->left);
-            if (val){
+            while (val){
                 executeTree(ptr->right,scope++);
+                val = eval_expr(ptr->left);
             }
         }
         else if (strcmp(ptr->type, "FOR") == 0) {
-            ptr = ptr->left;
-            // gather loop info
-
-            gotonode(root, ptr, current_depth);
-            ptr = ptr->next;
-        }
-        else if (strcmp(ptr->type, "LOOP_INFO") == 0) {
-            // used inside for loop, contains VAR and RANGE
-            ptr = ptr->next;
-        }
-        else if (strcmp(ptr->type, "RANGE") == 0) {
-            // define start and end of range
-            ptr = ptr->next;
+            //
         }
         else if (strcmp(ptr->type, "NEXT") == 0) {
             executeTree(ptr->next,scope--);
@@ -276,7 +288,7 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
         
             // Execute function body
             hasReturned = 0;
-            executeTree(calledFunc->body,scope);
+            executeTree(calledFunc->body,scope++);
         
             // Optionally use returnValue here
             float result = returnValue;
