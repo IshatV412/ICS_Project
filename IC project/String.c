@@ -29,7 +29,7 @@ void increase_string_capacity() {
 }
 
 // Add new string variable
-void add_string_variable(const char *name, const char *value, int scope) {
+void add_string_variable(char *name, char *value, int scope) {
     for (int i = 0; i < string_size; i++) {
         if (strcmp(string_loc[i].name, name) == 0 && string_loc[i].scope == scope) {
             //printf("Error: Variable '%s' already exists in scope %d\n", name, scope);
@@ -52,7 +52,7 @@ void add_string_variable(const char *name, const char *value, int scope) {
 }
 
 // Find string variable by name and highest available scope
-string* get_string_variable(const char *name, int current_scope) {
+string* get_string_variable(char *name, int current_scope) {
     string *result = NULL;
     int highest_scope = -1;
 
@@ -69,7 +69,7 @@ string* get_string_variable(const char *name, int current_scope) {
 }
 
 // Update string value using pointer
-void update_string_variable_ptr(string *var, const char *new_value) {
+void update_string_variable_ptr(string *var, char *new_value) {
     if (var != NULL) {
         strncpy(var->value, new_value, MAX_STRING_LENGTH - 1);
         var->value[MAX_STRING_LENGTH - 1] = '$';  // Ensure custom terminator
