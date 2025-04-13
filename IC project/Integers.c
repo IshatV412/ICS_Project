@@ -38,6 +38,10 @@ int_var* get_int_var(char *name, int scope) {
         printf("Error: Name cannot be null.\n");
         exit(1);
     }
+    if (int_loc == NULL || int_size == 0) {
+        printf("Error: No variables stored or storage not initialized.\n");
+        exit(1);
+    }
     int_var* latest = NULL;
     for (int i = 0; i < int_size; i++) {
         if (strcmp(int_loc[i].name, name) == 0 && int_loc[i].scope <= scope) {
@@ -51,23 +55,17 @@ int_var* get_int_var(char *name, int scope) {
     }
     return latest;
 }
-// Get variable by name only (for testing)
-int_var* int_get_var_by_name(char *name) {
-    for (int i = 0; i < int_size; i++) {
-        if (strcmp(int_loc[i].int_name, name) == 0) {
-            return &int_loc[i];
-        }
-    }
-    return NULL;
-}
 
 // Add variable with scope check
 void int_add_variable(int_var *new_var) {
+    if (new_var == NULL || strlen(new_var->int_name) == 0) {
+        printf("Error: Invalid variable provided.\n");
+        return;
+    }
     if (int_get_var(new_var->int_name, new_var->int_scope)) {
         printf("Error: Variable %s already exists in scope %d!\n", new_var->int_name, new_var->int_scope);
         return;
     }
-
     if (int_size == int_capacity) {
         int_increase_capacity();
     }
@@ -76,13 +74,6 @@ void int_add_variable(int_var *new_var) {
     int_loc[int_size].int_value = new_var->int_value;
     int_loc[int_size].int_scope = new_var->int_scope;
     int_size++;
-}
-
-// Read new variable from user input
-void int_read_variable(int_var *var) {
-    printf("Enter value for %s: ", var->int_name);
-    scanf("%d", &var->int_value);
-    int_add_variable(var);
 }
 
 // Update variable by memory reference
