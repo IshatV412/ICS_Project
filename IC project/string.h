@@ -11,9 +11,9 @@ typedef struct {
 
 void init_string_storage();
 void increase_string_capacity();
-void add_string_variable(const char *name, const char *value, int scope);
-string* get_string_variable(const char *name, int current_scope);
-void update_string_variable_ptr(string *var, const char *new_value);
+void add_string_variable(char *name, char *value, int scope);
+string* get_string_variable(char *name, int current_scope);
+void update_string_variable_ptr(string *var, char *new_value);
 void print_string_variable_ptr(string *var);
 void delete_string_variable_ptr(string *var);
 void display_string_variables();
