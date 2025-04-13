@@ -1,5 +1,5 @@
-#ifndef FLOAT_H
-#define FLOAT_H
+#ifndef B24CS1053_B24ME1034_B24CM1054_B24CI1017_FLOAT_H
+#define B24CS1053_B24ME1034_B24CM1054_B24CI1017_FLOAT_H
 #define MAX_NAME_LEN 50
 
 // Structure definition for decimal type
