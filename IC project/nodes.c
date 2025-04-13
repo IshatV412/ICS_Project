@@ -179,7 +179,17 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASK") == 0) {
-            //
+            if(strcmp(ptr->value,"integer")==0){
+                scanf("%d", &(get_int_var(ptr->left->value,scope)->int_value));
+            }
+            else if(strcmp(ptr->value,"float")==0){
+                scanf("%f", &(get_float_variable(ptr->left->value,scope)->value));
+            }
+            else if(strcmp(ptr->value,"character")==0){
+                char c[MAX_CHAR_VALUE];
+                scanf("%s", c);
+                add_char_variable(ptr->left->value, c[0], scope);
+            }
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASSIGN") == 0) {
@@ -228,7 +238,23 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
             }
         }
         else if (strcmp(ptr->type, "FOR") == 0) {
-            //
+            // Initialize loop variable
+            struct treeNode* initNode = ptr->left;
+            int_add_variable(get_int_var(initNode->value, scope), eval_expr(initNode->left), scope);
+            if (initNode != NULL) {
+                int_update_variable(get_int_var(initNode->value, scope), eval_expr(initNode->left));
+            }
+            // Loop condition
+            float val = eval_expr(ptr->left->next);
+            while (val) {
+                executeTree(ptr->right, scope++);
+                // Update loop variable
+                struct treeNode* updateNode = ptr->left->next->next;
+                if (updateNode != NULL) {
+                    int_update_variable(get_int_var(updateNode->value, scope), eval_expr(updateNode->left));
+                }
+                val = eval_expr(ptr->left->next);
+            }
         }
         else if (strcmp(ptr->type, "NEXT") == 0) {
             executeTree(ptr->next,scope--);
