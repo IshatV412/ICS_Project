@@ -51,6 +51,17 @@ struct treeNode* gotonode(struct treeNode* root, struct treeNode* ptr, int depth
     }  
     return ptr; 
 }
+struct Function {
+    char name[MAX_VAR_LENGTH];
+    struct treeNode* parameters;
+    struct treeNode* body;
+    char returnType[20];
+};
+
+struct Function functionTable[100];
+int functionCount = 0;
+float returnValue = 0;
+int hasReturned = 0;
 
 
 float eval_expr(struct treeNode* ptr){
@@ -217,20 +228,70 @@ void executeTree(struct treeNode* root) {
             ptr = ptr->next;
         }
         else if (strcmp(ptr->type, "FUNC_DEC") == 0) {
-            ptr = ptr->next;
-        }
-        else if (strcmp(ptr->type, "FUNC_DATA") == 0) {
-            // contains parameters and return type
-            ptr = ptr->next;
-        }
-        else if (strcmp(ptr->type, "RET_TYPE") == 0) {
-            // type returned by function
-            ptr = ptr->next;
-        }
-        else if (strcmp(ptr->type, "CALL") == 0) {
+            struct Function newFunc;
+            strncpy(newFunc.name, ptr->value, MAX_VAR_LENGTH);
+        
+            struct treeNode* funcData = ptr->left;   // This contains FUNC_DATA and RET_TYPE
+            newFunc.body = ptr->right;               // Function body (block) is in the right field
+        
+            while (funcData != NULL) {
+                if (strcmp(funcData->type, "FUNC_DATA") == 0) {
+                    newFunc.parameters = funcData->left; // Parameters list
+                } else if (strcmp(funcData->type, "RET_TYPE") == 0) {
+                    strncpy(newFunc.returnType, funcData->value, 20);
+                }
+                funcData = funcData->next;
+            }
+        
+            functionTable[functionCount++] = newFunc;
             ptr = ptr->next;
         }
         else if (strcmp(ptr->type, "RETURN") == 0) {
+            if (ptr->left != NULL) {
+                returnValue = eval_expr(ptr->left);
+                hasReturned = 1;
+            }
+            return; 
+        }
+        else if (strcmp(ptr->type, "CALL") == 0) {
+            struct Function* calledFunc = NULL;
+        
+            for (int i = 0; i < functionCount; i++) {
+                if (strcmp(functionTable[i].name, ptr->value) == 0) {
+                    calledFunc = &functionTable[i];
+                    break;
+                }
+            }
+            if (calledFunc == NULL) {
+                fprintf(stderr, "Function not found: %s\n", ptr->value);
+                ptr = ptr->next;
+                return;
+            }
+            // Argument passing
+            struct treeNode* argNode = ptr->left;
+            struct treeNode* paramNode = calledFunc->parameters;
+        
+            while (argNode && paramNode) {
+                float val = eval_expr(argNode);
+                // This sets the function parameter as a local variable
+                //some function to initialise functions for the functions and assigning them values of the arguments we passed
+                argNode = argNode->next;
+                paramNode = paramNode->next;
+            }
+        
+            if (argNode || paramNode) {
+                fprintf(stderr, "Argument count mismatch in function call: %s\n", ptr->value);
+                ptr = ptr->next;
+                return;
+            }
+        
+            // Execute function body
+            hasReturned = 0;
+            executeTree(calledFunc->body);
+        
+            // Optionally use returnValue here
+            float result = returnValue;
+        
             ptr = ptr->next;
         }
         else if (strcmp(ptr->type, "LL_SORT") == 0) {
