@@ -2,21 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include "string.h"
-#define MAX_STRING_LENGTH 50  // Maximum allowed string length
-
+#define MAX_STRING_LENGTH 50  
 int string_capacity = 1;
 int string_size = 0;
 string *string_loc = NULL;
 
 // Initialize string storage
-void init_string_storage() {
+/*void init_string_storage() {
     string_loc = (string*) malloc(string_capacity * sizeof(string));
     if (string_loc == NULL) {
         //printf("Memory allocation failed\n");
         exit(1);
     }
 }
-
+*/
 // Resize string storage
 void increase_string_capacity() {
     string_capacity *= 2;
@@ -29,18 +28,29 @@ void increase_string_capacity() {
 }
 
 // Add new string variable
+// Add new string variable (initializes storage if needed)
 void add_string_variable(char *name, char *value, int scope) {
-    for (int i = 0; i < string_size; i++) {
-        if (strcmp(string_loc[i].name, name) == 0 && string_loc[i].scope == scope) {
-            //printf("Error: Variable '%s' already exists in scope %d\n", name, scope);
+    // Initialize storage if not already done
+    if (string_loc == NULL) {
+        string_loc = (string*) malloc(string_capacity * sizeof(string));
+        if (string_loc == NULL) {
             exit(1);
         }
     }
 
+    // Check for duplicate in the same scope
+    for (int i = 0; i < string_size; i++) {
+        if (strcmp(string_loc[i].name, name) == 0 && string_loc[i].scope == scope) {
+            exit(1);
+        }
+    }
+
+    // Resize if necessary
     if (string_size == string_capacity) {
         increase_string_capacity();
     }
 
+    // Add new variable
     strncpy(string_loc[string_size].name, name, sizeof(string_loc[string_size].name) - 1);
     string_loc[string_size].name[sizeof(string_loc[string_size].name) - 1] = '\0';
 
@@ -146,3 +156,35 @@ void free_all_string_memory() {
     string_capacity = 1;
     string_size = 0;
 }
+/*int main() {
+    // Adding variables (initialization is now automatic)
+    add_string_variable("greeting", "Hello", 0);
+    add_string_variable("name", "Alice", 0);
+    add_string_variable("farewell", "Goodbye", 1);
+
+    printf("All string variables after addition:\n");
+    display_string_variables();
+
+    // Access and print a variable
+    string *var = get_string_variable("name", 0);
+    print_string_variable_ptr(var);
+
+    // Update variable
+    update_string_variable_ptr(var, "Bob");
+    printf("\nAfter updating 'name':\n");
+    print_string_variable_ptr(var);
+
+    // Delete variable
+    delete_string_variable_ptr(get_string_variable("greeting", 0));
+    printf("\nAfter deleting 'greeting':\n");
+    display_string_variables();
+
+    // Free variables in scope 1
+    free_string_variables_by_scope(1);
+    printf("\nAfter freeing scope 1:\n");
+    display_string_variables();
+
+    // Free all memory
+    free_all_string_memory();
+    return 0;
+}*/
