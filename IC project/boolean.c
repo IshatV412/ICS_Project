@@ -6,6 +6,10 @@
 
 #define MAX_LENGTH 50 // Maximum length for variable names
 
+int bool_capacity = 1; // Initial storage capacity
+int bool_size = 0; // Number of currently stored variables
+struct boolean *bool_loc = NULL; // Pointer to dynamically allocated array
+
 // Structure to represent a boolean variable
 struct boolean {
     char name[MAX_LENGTH]; // Name of the variable
@@ -18,7 +22,7 @@ struct boolean {
 // struct boolean *bool_loc = NULL; // Pointer to dynamically allocated array
 
 // Function to initialize storage
-void bool_init_storage(struct boolean *bool_loc, int capacity) {
+void bool_init_storage(int capacity) {
     bool_loc = (struct boolean*)malloc(capacity * sizeof(struct boolean));
     if (bool_loc == NULL) {
         printf("Memory allocation failed\n");
@@ -27,7 +31,7 @@ void bool_init_storage(struct boolean *bool_loc, int capacity) {
 }
 
 // Function to double the storage capacity
-void bool_increase_capacity(struct boolean *bool_loc, int capacity) {
+void bool_increase_capacity(int capacity) {
     capacity *= 2;
     struct boolean* temp = (struct boolean*)realloc(bool_loc, capacity * sizeof(struct boolean));
     if (temp == NULL) {
@@ -38,7 +42,7 @@ void bool_increase_capacity(struct boolean *bool_loc, int capacity) {
 }
 
 // Function to add a new boolean variable
-void bool_add_variable(char *name, int value, int scope, struct boolean *bool_loc, int size, int capacity) {
+void bool_add_variable(char *name, int value, int scope) {
     // Ensure value is either 0 or 1
     if (value != 0 && value != 1) {
         printf("Error: Boolean values must be 0 or 1.\n");
@@ -46,7 +50,7 @@ void bool_add_variable(char *name, int value, int scope, struct boolean *bool_lo
     }
 
     // Check if a variable with the same name and scope exists
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < bool_size; i++) {
         if (strcmp(bool_loc[i].name, name) == 0 && bool_loc[i].scope == scope) {
             printf("Error: Variable %s already exists in scope %d!\n", name, scope);
             return;
@@ -54,15 +58,15 @@ void bool_add_variable(char *name, int value, int scope, struct boolean *bool_lo
     }
 
     // Increase capacity if needed
-    if (size == capacity) {
-        bool_increase_capacity(bool_loc, capacity);
+    if (bool_size == bool_capacity) {
+        bool_increase_capacity(bool_capacity);
     }
 
     // Add new variable
-    strcpy(bool_loc[size].name, name);
-    bool_loc[size].value = value;
-    bool_loc[size].scope = scope;
-    size++;
+    strcpy(bool_loc[bool_size].name, name);
+    bool_loc[bool_size].value = value;
+    bool_loc[bool_size].scope = scope;
+    bool_size++;
 }
 
 // Function to get a variable by name
@@ -96,7 +100,7 @@ void bool_read_variable(char *name, int scope, struct boolean *bool_loc, int siz
         return;
     }
 
-    bool_add_variable(name, value, scope, bool_loc, size, capacity);
+    bool_add_variable(name, value, scope);
 }
 
 // Function to print the value of a specific variable
