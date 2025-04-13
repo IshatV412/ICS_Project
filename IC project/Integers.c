@@ -33,15 +33,24 @@ void int_increase_capacity() {
 }
 
 // Get variable by name and scope (exact match)
-int_var* int_get_var(char *name, int scope) {
+int_var* get_int_var(char *name, int scope) {
+    if (name == NULL) {
+        printf("Error: Name cannot be null.\n");
+        exit(1);
+    }
+    int_var* latest = NULL;
     for (int i = 0; i < int_size; i++) {
-        if (strcmp(int_loc[i].int_name, name) == 0 && int_loc[i].int_scope == scope) {
-            return &int_loc[i];
+        if (strcmp(int_loc[i].name, name) == 0 && int_loc[i].scope <= scope) {
+            if (latest == NULL || int_loc[i].scope > latest->scope) {
+                latest = &int_loc[i];
+            }
         }
     }
-    return NULL;
+    if (latest == NULL) {
+        printf("No such integer with name:%s found in scope %d or lower",name,scope);
+    }
+    return latest;
 }
-
 // Get variable by name only (for testing)
 int_var* int_get_var_by_name(char *name) {
     for (int i = 0; i < int_size; i++) {
