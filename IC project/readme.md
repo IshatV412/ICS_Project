@@ -18,13 +18,16 @@ Open MSYS2 MinGW 64-bit terminal and run:\
 `pacman -S mingw-w64-x86_64-bison mingw-w64-x86_64-flex`
 
 2. For Linux \
-Run the following command:\ 
+Run the following command: \ 
 `sudo apt install bison flex`
 
 3. For macOS (Using HomeBrew)\
 `brew install bison flex`
 
 ### Build Instructions
+
+You can skip this step as the files generated are already added in the zip file
+
 Run the following commands to build the project:
 
 `bison -d b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.y` 
@@ -37,7 +40,7 @@ Run the following commands to build the project:
 
 
 ### Run Instructions
-To execute a program written in your custom language:
+- To execute a program written in your custom language:
 
 `./run < b24cs1053_b24me1034_b24cm1054_b24ci1017_main.cmm`
 
@@ -48,13 +51,14 @@ b24cs1053_b24me1034_b24cm1054_b24ci1017_main.cmm can be swapped for any file wit
 - End of Line is given by ' | '
 
 ### 1. Variable Declaration
-You can declare variables of various types:
+` You can declare variables of various types:
 - `create <identifier> as <type> |`  
   Example: 
 ```c 
 create x as int |
 create name as string |
-create list as linkedlist(5) |
+create listt as list(10) |
+create list1 as linkedlist(5) |
 create dict as dictionary of integer |
 ```
 
@@ -73,7 +77,7 @@ Example:
 `if (((x==4) or (x>=3)) and ((x<7) or (x<=1))) ...`
 
 ### 4. Conditional Statements
-Supports `if-then` and `if-then-else` blocks:  
+- Supports `if-then` and `if-then-else` blocks:  
 - `if (exp) then { block }`
 - `if (exp) then { block } else { block }`
 
