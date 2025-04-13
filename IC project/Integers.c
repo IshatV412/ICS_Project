@@ -75,7 +75,7 @@ int_var* get_int_var(char *name, int scope) {
     int_loc[int_size].int_scope = new_var->int_scope;
     int_size++;
 }*/
-void int_add_variable(const char *name, int scope, int value) {
+void int_add_variable(char *name, int scope, int value) {
     if (name == NULL || strlen(name) == 0) {
         printf("Error: Invalid variable name provided.\n");
         exit(1);
