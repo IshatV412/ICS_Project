@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "character.h"
 
 int char_capacity = 1;
 int char_size = 0;
