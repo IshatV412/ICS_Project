@@ -12,28 +12,47 @@ struct boolean {
     int scope;
 };
 
-// Initialization and memory management
-void bool_init_storage(struct boolean *bool_loc, int capacity);
-void bool_increase_capacity(struct boolean *bool_loc, int capacity);
-void bool_free_variables(int scope, int size, struct boolean *bool_loc);
-void bool_free_all_memory(struct boolean *bool_loc, int size, int capacity);
+#define MAX_LENGTH 50 // Maximum length for variable names
 
-// Variable management
-void bool_add_variable(char *name, int value, int scope, struct boolean *bool_loc, int size, int capacity);
-struct boolean* bool_get_variable(char *name, struct boolean *bool_loc, int size);
-void bool_update_variable(char *name, int new_value, struct boolean *bool_loc, int size);
-void bool_delete_variable(char *name, struct boolean *bool_loc, int size);
-void bool_read_variable(char *name, int scope, struct boolean *bool_loc, int size, int capacity);
-void bool_print_variable(char *name, struct boolean *bool_loc, int size);
-void bool_display_variables(int size, struct boolean *bool_loc);
+void bool_init_storage(); 
 
-// Logical operations
-bool bool_or(bool a, bool b);
-bool bool_and(bool a, bool b);
-bool bool_not(bool a);
-bool bool_nor(bool a, bool b);
-bool bool_nand(bool a, bool b);
-bool bool_xor(bool a, bool b);
-bool bool_xnor(bool a, bool b);
+// Function to double the storage capacity
+void bool_increase_capacity();
+
+// Function to add a new boolean variable
+void bool_add_variable(char *name, int value, int scope);
+
+// Function to get a variable by name
+struct boolean* bool_get_variable(char *name, struct boolean *bool_loc);
+
+// Logical operations for boolean values
+bool bool_or(bool a, bool b) { return (a || b); }
+bool bool_and(bool a, bool b) { return (a && b); }
+bool bool_not(bool a) { return (!a); }
+bool bool_nor(bool a, bool b) { return (!(a || b)); }
+bool bool_nand(bool a, bool b) { return !(a && b); }
+bool bool_xor(bool a, bool b) { return (((!a) && b) || ((!b) && a)); }
+bool bool_xnor(bool a, bool b) { return !xor(a, b); }
+
+// Function to read a boolean value from the user
+void bool_read_variable(char *name, int scope, struct boolean *bool_loc);
+
+// Function to print the value of a specific variable
+void bool_print_variable(char *name, struct boolean *bool_loc);
+
+// Function to update the value of an existing variable
+void bool_update_variable(char *name, int new_value, struct boolean *bool_loc);
+
+// Function to delete a specific variable by name
+void bool_delete_variable(char *name, struct boolean *bool_loc);
+
+// Function to free memory allocated for variables of a specific scope
+void bool_free_variables(int scope, struct boolean *bool_loc);
+
+// Function to free all allocated memory
+void bool_free_all_memory(struct boolean *bool_loc);
+
+// Function to display all stored variables
+void bool_display_variables(struct boolean *bool_loc);
 
 #endif // BOOLEAN_H
