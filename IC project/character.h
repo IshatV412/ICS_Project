@@ -15,12 +15,11 @@ character* add_char_variable(char *name, char value, int scope);
 void update_char_variable(character *var, char new_value);
 void print_char_variable_ptr(character *var);
 
-character* get_char_variable(character *char_loc, int size, char *name);
+character* get_char_variable(char* name, int scope);
 
 void delete_char_variable(character *var);
 void print_char_variable(character *char_loc, int size, char *name);
 void display_char_variables();
-void read_char_variable(char *name, int scope);
 
 // Relational operators
 int char_equals(char a, char b);
