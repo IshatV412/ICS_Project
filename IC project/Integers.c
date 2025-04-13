@@ -57,7 +57,7 @@ int_var* get_int_var(char *name, int scope) {
 }
 
 // Add variable with scope check
-void int_add_variable(int_var *new_var) {
+/*void int_add_variable(int_var *new_var) {
     if (new_var == NULL || strlen(new_var->int_name) == 0) {
         printf("Error: Invalid variable provided.\n");
         exit(1);
@@ -74,8 +74,25 @@ void int_add_variable(int_var *new_var) {
     int_loc[int_size].int_value = new_var->int_value;
     int_loc[int_size].int_scope = new_var->int_scope;
     int_size++;
-}
+}*/
+void int_add_variable(const char *name, int scope, int value) {
+    if (name == NULL || strlen(name) == 0) {
+        printf("Error: Invalid variable name provided.\n");
+        exit(1);
+    }
+    if (int_get_var(name, scope)) {
+        printf("Error: Variable %s already exists in scope %d!\n", name, scope);
+        exit(1);
+    }
+    if (int_size == int_capacity) {
+        int_increase_capacity();
+    }
 
+    strcpy(int_loc[int_size].int_name, name);
+    int_loc[int_size].int_value = value;
+    int_loc[int_size].int_scope = scope;
+    int_size++;
+}
 // Update variable by memory reference
 void int_update_variable(int_var *var, int new_value) {
     if (var) {
