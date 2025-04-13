@@ -1,0 +1,39 @@
+#ifndef BOOLEAN_H
+#define BOOLEAN_H
+
+#include <stdbool.h>
+
+#define MAX_LENGTH 50
+
+// Structure to represent a boolean variable
+struct boolean {
+    char name[MAX_LENGTH];
+    int value;
+    int scope;
+};
+
+// Initialization and memory management
+void bool_init_storage(struct boolean *bool_loc, int capacity);
+void bool_increase_capacity(struct boolean *bool_loc, int capacity);
+void bool_free_variables(int scope, int size, struct boolean *bool_loc);
+void bool_free_all_memory(struct boolean *bool_loc, int size, int capacity);
+
+// Variable management
+void bool_add_variable(char *name, int value, int scope, struct boolean *bool_loc, int size, int capacity);
+struct boolean* bool_get_variable(char *name, struct boolean *bool_loc, int size);
+void bool_update_variable(char *name, int new_value, struct boolean *bool_loc, int size);
+void bool_delete_variable(char *name, struct boolean *bool_loc, int size);
+void bool_read_variable(char *name, int scope, struct boolean *bool_loc, int size, int capacity);
+void bool_print_variable(char *name, struct boolean *bool_loc, int size);
+void bool_display_variables(int size, struct boolean *bool_loc);
+
+// Logical operations
+bool bool_or(bool a, bool b);
+bool bool_and(bool a, bool b);
+bool bool_not(bool a);
+bool bool_nor(bool a, bool b);
+bool bool_nand(bool a, bool b);
+bool bool_xor(bool a, bool b);
+bool bool_xnor(bool a, bool b);
+
+#endif // BOOLEAN_H
