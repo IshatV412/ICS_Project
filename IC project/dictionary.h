@@ -18,11 +18,9 @@ void initialise_dict_storage(dictionary_C_C** dict_storage,int* dict_capacity, i
  
 void increase_dict_capacity(dictionary_C_C** dict_storage, int* capacity);
 
-void add_dictionary(dictionary_C_C** dict_storage,int* size, int* capacity, char* name, int len, int scope);
-
 void increase_len(dictionary_C_C *dict, int len);
 
-dictionary_C_C* create_dictionary_C_C(int len, char name[50]);
+dictionary_C_C* create_dictionary_C_C(int len, char name[50],int *size, int* capacity, dictionary_C_C **dict_storage, int scope);
 
 void insert_C_C(dictionary_C_C *dict, char *key, char *value);
 
