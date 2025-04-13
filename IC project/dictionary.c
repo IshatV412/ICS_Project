@@ -6,7 +6,7 @@
 void initialise_dict_storage(dictionary_C_C** dict_storage,int* dict_capacity, int* dict_size) {
     *dict_capacity = 1;
     *dict_size = 0;
-    *dict_storage = (dictionary_C_C*)malloc((*dict_capacity) * sizeof(dictionary_C_C*));
+    *dict_storage = (dictionary_C_C*)malloc((*dict_capacity) * sizeof(dictionary_C_C));
     if (*dict_storage == NULL) {
         exit(1);
     }
