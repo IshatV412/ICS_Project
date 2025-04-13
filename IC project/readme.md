@@ -55,10 +55,10 @@ Supports basic arithmetic operations:
 Example:  
 `x = (5 + 3) * 4 |`
 
-Copy
-
 ### 3. Conditional Statements
 Supports `if-then` and `if-then-else` blocks:  
+- `if (exp) then { block }`
+- `if (exp) then { block } else { block }` 
 Example:
 ```c  
 if (x > 10) then {
