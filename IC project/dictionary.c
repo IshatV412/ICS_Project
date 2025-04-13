@@ -3,31 +3,35 @@
 #include <string.h>
 #include "dictionary.h"
 
-void initialise_dict_storage(dictionary_C_C** dict_storage,int* dict_capacity, int* dict_size) {
-    *dict_capacity = 1;
-    *dict_size = 0;
-    *dict_storage = (dictionary_C_C*)malloc((*dict_capacity) * sizeof(dictionary_C_C));
+int dict_capacity = 1; // Initial storage capacity
+int dict_size = 0; // Number of currently stored dictionaries
+dictionary_C_C **dict_storage = NULL; // Pointer to dynamically allocated array
+
+void initialise_dict_storage() {
+    dict_capacity = 1;
+    dict_size = 0;
+    dict_storage = (dictionary_C_C*)malloc((dict_capacity) * sizeof(dictionary_C_C));
     if (*dict_storage == NULL) {
         exit(1);
     }
 }
 
-void increase_dict_capacity(dictionary_C_C** dict_storage, int* capacity) {
-    *capacity *= 2;
-    dictionary_C_C* temp = realloc(*dict_storage,(*capacity) * sizeof(dictionary_C_C));
+void increase_dict_capacity() {
+    dict_capacity *= 2;
+    dictionary_C_C* temp = realloc(*dict_storage,(dict_capacity) * sizeof(dictionary_C_C));
     if (temp == NULL) {
         exit(1);
     }
     *dict_storage = temp;
 }
-dictionary_C_C* get_dict(dictionary_C_C** dict_storage, int* dict_size, char* name, int scope) {
+dictionary_C_C* get_dict( char* name, int scope) {
     if (dict_size == NULL || name == NULL) {
         printf("Invalid storage or name.\n");
         return NULL;
     }
     dictionary_C_C* latest = NULL;
 
-    for (int i = 0; i < *dict_size; i++) {
+    for (int i = 0; i < dict_size; i++) {
         if ((strcmp(dict_storage[i]->name, name) == 0) && dict_storage[i]->scope <= scope ) {
             if (latest == NULL || dict_storage[i]->scope > latest->scope) {
                 latest = dict_storage[i];
@@ -55,14 +59,10 @@ void increase_len(dictionary_C_C *dict, int len){
     }
 }
 
-dictionary_C_C* create_dictionary_C_C(int len, char name[50],int *size, int* capacity, dictionary_C_C **dict_storage, int scope){
-    if (*size == *capacity) {
-        increase_dict_capacity(dict_storage,capacity);
+dictionary_C_C* create_dictionary_C_C(int len, char name[50], int scope){
+    if (dict_size == dict_capacity) {
+        increase_dict_capacity(dict_storage,dict_capacity);
     }
-    strcpy((*dict_storage)[*size].name, name);
-    (*dict_storage)[*size].len = len;
-    (*dict_storage)[*size].scope = scope;
-    (*size)++;
     dictionary_C_C* dict = (dictionary_C_C*)malloc(sizeof(dictionary_C_C));
     strcpy(dict->name, name); //apparently you need to use strcpy...
     dict->start = (node_C_C*)malloc(sizeof(node_C_C)); //initialising the first node
@@ -159,6 +159,18 @@ int delete_C_C(dictionary_C_C *dict, char *key) {
     return 0; //else returns 0
 }
 
+void free_dict_storage(int scope) {
+    for (int i = 0; i < dict_size; i++) {
+        if(scope <= dict_storage[i]->scope) { //if the scope is same, free the dictionary
+            free_dict_C_C(dict_storage[i]);
+            dict_storage[i] = NULL;
+            dict_size--;
+        }
+    }
+}
+// Function to free all memory allocated for dictionaries
+
+
 void test_dict_C_C(){ //a test to see if it works
     dictionary_C_C* dict_array = NULL;
     int dict_capacity, dict_size;
@@ -166,7 +178,7 @@ void test_dict_C_C(){ //a test to see if it works
     // Initialize dictionary array
     initialise_dict_storage(&dict_array, &dict_capacity, &dict_size);
     dictionary_C_C *dict;
-    dict = create_dictionary_C_C(1,"Test",&dict_size,&dict_capacity,&dict_array,1);
+    dict = create_dictionary_C_C(1,"dict1", 1); //create a dictionary
     printing_C_C(dict);
     char *key = "key1", *value = "value1";
     insert_C_C(dict,key,value);
