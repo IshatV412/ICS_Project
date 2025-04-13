@@ -24,11 +24,6 @@ dictionary_C_C* get_Dict_C_C(dictionary_C_C** dict_storage,int* size, char* name
 
 }
 
-void add_dictionary(dictionary_C_C** dict_storage,int* size, int* capacity, char* name, int len, int scope) {
-    
-}
-
-
 void increase_len(dictionary_C_C *dict, int len){
     node_C_C *node = dict->start; //putting node at start
     for(int i=0; i<len-1; i++){
