@@ -1,6 +1,6 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "dictionary.h"
 
 void initialise_dict_storage(dictionary_C_C** dict_storage,int* dict_capacity, int* dict_size) {
@@ -20,15 +20,12 @@ void increase_dict_capacity(dictionary_C_C** dict_storage, int* capacity) {
     }
     *dict_storage = temp;
 }
+dictionary_C_C* get_Dict_C_C(dictionary_C_C** dict_storage,int* size, char* name, int len, int scope) {
+
+}
 
 void add_dictionary(dictionary_C_C** dict_storage,int* size, int* capacity, char* name, int len, int scope) {
-    if (*size == *capacity) {
-        increase_dict_capacity(dict_storage,capacity);
-    }
-    strcpy((*dict_storage)[*size].name, name);
-    (*dict_storage)[*size].len = len;
-    (*dict_storage)[*size].scope = scope;
-    (*size)++;
+    
 }
 
 
@@ -47,7 +44,14 @@ void increase_len(dictionary_C_C *dict, int len){
     }
 }
 
-dictionary_C_C* create_dictionary_C_C(int len, char name[50]){
+dictionary_C_C* create_dictionary_C_C(int len, char name[50],int *size, int* capacity, dictionary_C_C **dict_storage, int scope){
+    if (*size == *capacity) {
+        increase_dict_capacity(dict_storage,capacity);
+    }
+    strcpy((*dict_storage)[*size].name, name);
+    (*dict_storage)[*size].len = len;
+    (*dict_storage)[*size].scope = scope;
+    (*size)++;
     dictionary_C_C* dict = (dictionary_C_C*)malloc(sizeof(dictionary_C_C));
     strcpy(dict->name, name); //apparently you need to use strcpy...
     dict->start = (node_C_C*)malloc(sizeof(node_C_C)); //initialising the first node
@@ -145,8 +149,13 @@ int delete_C_C(dictionary_C_C *dict, char *key) {
 }
 
 void test_dict_C_C(){ //a test to see if it works
+    dictionary_C_C* dict_array = NULL;
+    int dict_capacity, dict_size;
+
+    // Initialize dictionary array
+    initialise_dict_storage(&dict_array, &dict_capacity, &dict_size);
     dictionary_C_C *dict;
-    dict = create_dictionary_C_C(1,"Test");
+    dict = create_dictionary_C_C(1,"Test",&dict_size,&dict_capacity,&dict_array,1);
     printing_C_C(dict);
     char *key = "key1", *value = "value1";
     insert_C_C(dict,key,value);
