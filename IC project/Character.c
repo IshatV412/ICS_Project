@@ -10,6 +10,10 @@ character *char_loc = NULL;
 
 // Function to initialize storage
 void init_char_storage() {
+    if (char_loc == NULL) {
+        printf("Error: Attempt to resize uninitialized storage.\n");
+        exit(1);
+    }
     char_loc = (character*)malloc(char_capacity * sizeof(character));
     if (char_loc == NULL) {
         printf("Character Vector Storage Allocation Failed.\n");
@@ -19,6 +23,10 @@ void init_char_storage() {
 
 // Function to resize storage when needed
 void increase_char_capacity() {
+    if (char_loc == NULL) {
+        printf("Error: Attempt to resize uninitialized storage.\n"):
+        exit(1);
+    }
     char_capacity *= 2;
     character* temp = (character*)realloc(char_loc, char_capacity * sizeof(character));
     if (temp == NULL) {
@@ -29,6 +37,10 @@ void increase_char_capacity() {
 }
 
 character* get_char_variable(char *name, int scope) {
+    if (name == NULL) {
+        printf("Error: Name cannot be null.\n");
+        exit(1);
+    }
     character* latest = NULL;
     for (int i = 0; i < char_size; i++) {
         if (strcmp(char_loc[i].name, name) == 0 && char_loc[i].scope <= scope) {
@@ -38,14 +50,28 @@ character* get_char_variable(char *name, int scope) {
         }
     }
     if (latest == NULL) {
-        printf("No such string with name:%s found\n",name);
+        printf("No such string with name:%s found in scope %d or lower",name,scope);
     }
     return latest;
 }
 // Function to add a new character variable and return its pointer
 void add_char_variable(char *name, char value, int scope) {
+    if (name == NULL || strlen(name) == 0) {
+        printf("Error: Variable name cannot be NULL or empty.\n");
+        exit(1);
+    }
+    if (!is_letter(value)) {
+        printf("Error: Value must be a valid letter.\n");
+        exit(1);
+    }
     if (char_size == char_capacity) {
         increase_char_capacity();
+    }
+    for (int i = 0; i < char_size; i++) { // Ensure unique names within the same scope
+        if (strcmp(char_loc[i].name, name) == 0 && char_loc[i].scope == scope) {
+            printf("Error: Variable with name '%s' already exists in scope %d.\n", name, scope);
+            exit(1);
+        }
     }
     strcpy(char_loc[char_size].name, name);
     char_loc[char_size].value = value;
@@ -54,9 +80,15 @@ void add_char_variable(char *name, char value, int scope) {
 
 // Function to update value via pointer
 void update_char_variable(character *var, char new_value) {
-    if (var != NULL) {
-        var->value = new_value;
+    if (var == NULL) {
+        printf("Error: Invalid variable pointer provided for update.\n");
+        exit(1);
     }
+    if (!is_letter(new_value)) {
+        printf("Error: New value must be a valid letter.\n");
+        exit(1);
+    }
+    var->value = new_value
 }
 
 // Function to print variable via pointer
@@ -103,6 +135,10 @@ int get_ascii_value(char c) { return (int)c; }
 
 // Function to delete a variable via pointer
 void delete_char_variable(character *var) {
+    if (var == NULL || char_loc == NULL || char_size <= 0) {
+        printf("Error: Invalid variable pointer or no variables stored.\n");
+        exit(1);
+    }
     int index = -1;
     for (int i = 0; i < char_size; i++) {
         if (&char_loc[i] == var) {
@@ -116,6 +152,9 @@ void delete_char_variable(character *var) {
         }
         char_size--;
     }
+    else {
+        printf("Error: Variable not found in storage.\n");
+        exit(1);
 }
 
 // Function to display all stored variables
@@ -131,8 +170,10 @@ void display_char_variables() {
 
 // Free all memory
 void free_char_memory() {
-    free(char_loc);
-    char_loc = NULL;
-    char_size = 0;
-    char_capacity = 1;
+    if (char_loc != NULL){
+      free(char_loc);
+      }
+    else {
+        printf(`already freed`)
+      }
 }
