@@ -1,9 +1,10 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>   
+#include <string.h> 
+#include "tree.h"
 
-typedef struct treeNode{
+/*typedef struct treeNode{
     char type[20]; //stores the node type like assignment,declaration,etc
     char value[50]; //stores the value of the node
     struct treeNode* left; //point to the left branch in the tree
@@ -17,7 +18,7 @@ treeNode* createNode(char type[], char value[], treeNode* left, treeNode* right,
         fprintf(stderr,"Memory Allocation Failed\n");
         exit(1);
     }
-    strncpy(newNode->type,type,20);
+    strncpy(newNode->type,type,20); //copying the 
     if (value) {
         strncpy(newNode->value,value,50);
     }
@@ -30,7 +31,6 @@ treeNode* createNode(char type[], char value[], treeNode* left, treeNode* right,
 
     return newNode;
 }
-treeNode* root = NULL; //the head node of the tree
 
 // Fancy print function
 void printTree(treeNode* node, int indent, int isLast) {
@@ -48,9 +48,9 @@ void printTree(treeNode* node, int indent, int isLast) {
         if (node->right) printTree(node->right, indent + 4, node->next ? 0 : 1);
         if (node->next) printTree(node->next, indent + 4, 1);
     }
-}
+}*/
 
-// Error handler
+// Any grammatical syntax error will print Syntax Error
 int yyerror(const char* msg) {
     fprintf(stderr, "Syntax Error: %s\n", msg);
     return 0;
@@ -72,45 +72,55 @@ int yylex();
 
 //defining all the tokens used by the lexer
 %token IF THEN ELSE RETURN CREATE AS OF SHOW ASK LOOP FROM TO WHILE NEXT LEAVE LET GENERATE CALL AND OR 
-%token INSERT SET GET SEARCH SORT DELETE
+%token INSERT SET GET SEARCH SORT DELETE RUN
 %token PLUS MINUS MULT DIV PERCENT ASSIGN EQ NEQ GT LT GTE LTE 
 %token LBRACE RBRACE LPAREN RPAREN EOL COMMA AMPERSAND LSQUARE RSQUARE
 
-%type <Node> program statement_list statement var_dec assignment show_statement ask_statement ll_operations
+//defining all the nodes of the tree
+%type <Node> program statement_list statement var_dec assignment show_statement ask_statement ll_operations dict_operations run_script
 %type <Node> if_statement while_loop for_loop next_statement  leave_statement block function_dec function_call return_statement
-%type <Node> exp parameter parameters arguments
+%type <Node> exp parameter parameters arguments exp_list
 
+//special tokens of the lexer that need a datatype in union
 %token <str> IDENTIFIER STRING
 %token <int_val> INTEGER
 %token <float_val> FLOAT
 %token <char_val> CHAR
-%token <str> INT_TYPE CHAR_TYPE FLOAT_TYPE LIST_TYPE POINTER LINKEDLIST DICTIONARY NULL_TYPE BOOLEAN
+%token <str> INT_TYPE CHAR_TYPE FLOAT_TYPE STRING_TYPE LIST_TYPE POINTER LINKEDLIST DICTIONARY NULL_TYPE BOOLEAN
 
-%left    '+' '-'
-%left    '*' '/'
-%right   '='
+//defining the precedence order for operations 
+%left OR
+%left AND
+%left EQ NEQ LT LTE GT GTE
+%left '+' '-'
+%left '*' '/'
+%right '='
+
 %nonassoc  '<' '>' 
 
+//debugger provided by bison
 %debug
 
 %%
-
+//the program is defined by a list of statements that it needs to execute
 program:
-    statement_list { root = $$; }
-    ;
-
-statement_list:
-    statement optional_eol statement_list { $1->next = $3; $$ = $1; }
-  | statement optional_eol               { $$ = $1; }
+    statement_list { setAST($1); }
 ;
 
-optional_eol:
+
+statement_list: //the statement list is defined by statements and not every statement needs an EOL
+    statement optional_eol statement_list { $1->next = $3; $$ = $1; }
+  | statement optional_eol                { $$ = $1; }
+;
+
+optional_eol: //optinal_eol grammar to either have EOL or be empty
     EOL
   | /* empty */
 ;
 
-
-statement:
+//all the statements to be used
+statement: 
+    //the statements that need an EOL
     var_dec EOL                { $$ = $1; }
   | assignment EOL             { $$ = $1; }
   | show_statement EOL         { $$ = $1; }
@@ -119,6 +129,8 @@ statement:
   | next_statement EOL         { $$ = $1; } 
   | leave_statement EOL        { $$ = $1; }
   | ll_operations EOL          { $$ = $1; }
+  | dict_operations EOL        { $$ = $1; } 
+  | run_script EOL             { $$ = $1; } 
 
   // These don't require EOL after since they end in a block
   | if_statement           { $$ = $1; }
@@ -128,27 +140,33 @@ statement:
   | function_dec           { $$ = $1; }
 ;
 
-
-var_dec: CREATE IDENTIFIER AS INT_TYPE                  {$$ = createNode("VAR_DEC",$2,createNode("TYPE",$4,NULL,NULL,NULL),NULL,NULL);}
-       | CREATE IDENTIFIER AS CHAR_TYPE                 {$$ = createNode("VAR_DEC",$2,createNode("TYPE",$4,NULL,NULL,NULL),NULL,NULL);}
-       | CREATE IDENTIFIER AS FLOAT_TYPE                {$$ = createNode("VAR_DEC",$2,createNode("TYPE",$4,NULL,NULL,NULL),NULL,NULL);} 
-       | CREATE IDENTIFIER AS LIST_TYPE LPAREN exp RPAREN     {$$ = createNode("LIST_DEC",$2,createNode("TYPE",$4,NULL,NULL,NULL),$6,NULL);} 
-       | CREATE IDENTIFIER AS POINTER                   {$$ = createNode("VAR_DEC",$2,createNode("TYPE",$4,NULL,NULL,NULL),NULL,NULL);} 
-       | CREATE IDENTIFIER AS LINKEDLIST LPAREN exp RPAREN    {$$ = createNode("LL_DEC",$2,createNode("TYPE",$4,NULL,NULL,NULL),$6,NULL);} 
-       | CREATE IDENTIFIER AS DICTIONARY OF INT_TYPE    {$$ = createNode("DICT_DEC",$2,createNode("TYPE",$6,NULL,NULL,NULL),NULL,NULL);}
-       | CREATE IDENTIFIER AS DICTIONARY OF CHAR_TYPE   {$$ = createNode("DICT_DEC",$2,createNode("TYPE",$6,NULL,NULL,NULL),NULL,NULL);}
+//all the syntax rules for declaring a variable in the language
+var_dec: CREATE IDENTIFIER AS INT_TYPE                  {$$ = createNode("VAR_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),NULL,NULL);}
+       | CREATE IDENTIFIER AS CHAR_TYPE                 {$$ = createNode("VAR_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),NULL,NULL);}
+       | CREATE IDENTIFIER AS STRING_TYPE               {$$ = createNode("VAR_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),NULL,NULL);}
+       | CREATE IDENTIFIER AS FLOAT_TYPE                {$$ = createNode("VAR_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),NULL,NULL);} 
+       | CREATE IDENTIFIER AS LIST_TYPE LPAREN exp RPAREN     {$$ = createNode("LIST_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),$6,NULL);} 
+       | CREATE IDENTIFIER AS POINTER                   {$$ = createNode("VAR_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),NULL,NULL);} 
+       | CREATE IDENTIFIER AS LINKEDLIST LPAREN exp RPAREN    {$$ = createNode("LL_DEC",$2,createNode("DATATYPE",$4,NULL,NULL,NULL),$6,NULL);} 
+       | CREATE IDENTIFIER AS DICTIONARY OF INT_TYPE    {$$ = createNode("DICT_DEC",$2,createNode("DATATYPE",$6,NULL,NULL,NULL),NULL,NULL);}
+       | CREATE IDENTIFIER AS DICTIONARY OF CHAR_TYPE   {$$ = createNode("DICT_DEC",$2,createNode("DATATYPE",$6,NULL,NULL,NULL),NULL,NULL);}
        ;
-
+//list of expressions so that I can have multiple expressions in show and ask
+exp_list:
+    exp                          { $$ = $1; }
+  | exp COMMA exp_list           { $1->next = $3; $$ = $1; }
+;
+ 
+//the syntax for print statement
 show_statement: SHOW LPAREN STRING RPAREN                   {$$ = createNode("SHOW",$3,NULL,NULL,NULL);}
-
-              | SHOW LPAREN STRING COMMA exp RPAREN  {$$ = createNode("SHOW",$3,$5,NULL,NULL);} 
+              | SHOW LPAREN STRING COMMA exp_list RPAREN    {$$ = createNode("SHOW",$3,$5,NULL,NULL);} 
               ;                                               
-
-ask_statement: ASK LPAREN STRING COMMA AMPERSAND IDENTIFIER RPAREN    {$$ = createNode("ASK",$3,createNode("VAR",$6,NULL,NULL,NULL),NULL,NULL);}
+//the syntax for asking for input
+ask_statement: ASK LPAREN STRING COMMA exp_list RPAREN    { $$ = createNode("ASK", $3, $5, NULL, NULL); }
              ;   
-
+//all the ways of assigning an identifier a value
 assignment:
-    IDENTIFIER ASSIGN exp                      { $$ = createNode("ASSIGN", $1, $3, NULL, NULL); }
+    IDENTIFIER ASSIGN exp                      { $$ = createNode("ASSIGN", $1, $3, NULL, NULL); } //using exp 
     | IDENTIFIER LSQUARE exp RSQUARE ASSIGN exp  { 
         treeNode* indexNode = createNode("INDEX", $1, $3, NULL, NULL);
         $$ = createNode("ASSIGN", NULL, indexNode, $6, NULL);
@@ -157,10 +175,14 @@ assignment:
         treeNode* getNode = createNode("LL_GET", $3, $7, NULL, NULL); 
         $$ = createNode("ASSIGN", $1, getNode, NULL, NULL); 
     }
-
-  ;
+    | IDENTIFIER ASSIGN IDENTIFIER LBRACE GET COMMA exp RBRACE {
+        treeNode* getNode = createNode("DICT_GET", $3, $7, NULL, NULL); 
+        $$ = createNode("ASSIGN", $1, getNode, NULL, NULL); 
+    }
+    | IDENTIFIER ASSIGN function_call {$$ = createNode("ASSIGN", $1, $3, NULL, NULL);}
+;
  
-
+//all the expressions that could be possible in the language
 exp
   : IDENTIFIER                                 { $$ = createNode("VAR", $1, NULL, NULL, NULL); }
   | IDENTIFIER LSQUARE exp RSQUARE             { $$ = createNode("INDEX", $1, $3, NULL, NULL); }
@@ -175,50 +197,64 @@ exp
   | exp MULT exp                               { $$ = createNode("MULT", NULL, $1, $3, NULL); }
   | exp DIV exp                                { $$ = createNode("DIV", NULL, $1, $3, NULL); }
   | exp PERCENT exp                            { $$ = createNode("MOD", NULL, $1, $3, NULL); }
+  | exp AND exp                                { $$ = createNode("AND", NULL, $1, $3, NULL); }
+  | exp OR exp                                 { $$ = createNode("OR", NULL, $1, $3, NULL); }
   | exp LT exp                                 { $$ = createNode("LT", NULL, $1, $3, NULL); }
   | exp LTE exp                                { $$ = createNode("LTE", NULL, $1, $3, NULL); }
   | exp GT exp                                 { $$ = createNode("GT", NULL, $1, $3, NULL); }
   | exp GTE exp                                { $$ = createNode("GTE", NULL, $1, $3, NULL); }
   | exp EQ exp                                 { $$ = createNode("EQ", NULL, $1, $3, NULL); }
   | exp NEQ exp                                { $$ = createNode("NEQ", NULL, $1, $3, NULL); }
-  | exp AND exp                                { $$ = createNode("AND", NULL, $1, $3, NULL); }
-  | exp OR exp                                 { $$ = createNode("OR", NULL, $1, $3, NULL); }
-  ;
+  | LPAREN exp RPAREN                          { $$ = $2; } 
+;
 
+//operations of linked_list
 ll_operations: IDENTIFIER LPAREN SORT RPAREN                        {$$ = createNode("LL_SORT", $1, NULL, NULL, NULL);}
              | IDENTIFIER LPAREN SEARCH COMMA exp RPAREN            {$$ = createNode("LL_SEARCH", $1, $5, NULL, NULL);}
              | IDENTIFIER LPAREN INSERT COMMA exp COMMA exp RPAREN  {$$ = createNode("LL_INSERT", $1, $5, $7, NULL);}
              | IDENTIFIER LPAREN SET COMMA exp COMMA exp RPAREN     {$$ = createNode("LL_SET", $1, $5, $7, NULL); }
              | IDENTIFIER LPAREN DELETE COMMA exp RPAREN            {$$ = createNode("LL_DEL",$1,$5,NULL,NULL);}
-;  
+; 
+
+dict_operations: IDENTIFIER LBRACE INSERT COMMA exp COMMA exp RBRACE  {$$ = createNode("DICT_INSERT", $1, $5, $7, NULL);}
+               | IDENTIFIER LBRACE SET COMMA exp COMMA exp RBRACE     {$$ = createNode("DICT_SET", $1, $5, $7, NULL); }
+               | IDENTIFIER LBRACE DELETE COMMA exp RBRACE            {$$ = createNode("DICT_DEL",$1,$5,NULL,NULL);}
+; 
 
 
 if_statement: IF LPAREN exp RPAREN THEN block               {$$ = createNode("IF",NULL,$3,$6,NULL);}
             | IF LPAREN exp RPAREN THEN block ELSE block    {$$ = createNode("IF-ELSE",NULL,$3,$6,$8);}
-            ;
+;
 
-block: LBRACE statement_list RBRACE {$$ = createNode("BLOCK",NULL,$2,NULL,NULL);}
-     ;
+block: LBRACE statement_list RBRACE { $$ = $2; }
+
+;
 
 while_loop: WHILE LPAREN exp RPAREN block {$$ = createNode("WHILE",NULL,$3,$5,NULL);}
 ;
 
-for_loop: LOOP IDENTIFIER FROM exp TO exp block {$$ = createNode("FOR", NULL, createNode("VAR", $2, NULL, NULL, NULL), createNode("RANGE", NULL, $4, $6, NULL), $7);}
+for_loop: LOOP IDENTIFIER FROM exp TO exp block {
+          treeNode* loop_var = createNode("VAR", $2, NULL, NULL, NULL);
+          treeNode* range = createNode("RANGE", NULL, $4, $6, NULL);
+          treeNode* loop_info = createNode("LOOP_INFO", NULL, loop_var, range, NULL);
+          $$ = createNode("FOR", NULL, loop_info, $7, NULL);
+    }
 ;
 
-next_statement: NEXT {$$ = createNode("NEXT",NULL,NULL,NULL,NULL);}
+
+next_statement: NEXT   {$$ = createNode("NEXT",NULL,NULL,NULL,NULL);}
 ;
 
 leave_statement: LEAVE {$$ = createNode("LEAVE",NULL,NULL,NULL,NULL);}
 ;
 
-parameter: IDENTIFIER AS INT_TYPE       { $$ = createNode("PARAMETER", $1, createNode("TYPE", $3, NULL, NULL, NULL), NULL, NULL); }
-         | IDENTIFIER AS CHAR_TYPE      { $$ = createNode("PARAMETER", $1, createNode("TYPE", $3, NULL, NULL, NULL), NULL, NULL); }
-         | IDENTIFIER AS FLOAT_TYPE     { $$ = createNode("PARAMETER", $1, createNode("TYPE", $3, NULL, NULL, NULL), NULL, NULL); }
-         | IDENTIFIER AS LIST_TYPE      { $$ = createNode("PARAMETER", $1, createNode("TYPE", $3, NULL, NULL, NULL), NULL, NULL); }
-         | IDENTIFIER AS POINTER        { $$ = createNode("PARAMETER", $1, createNode("TYPE", $3, NULL, NULL, NULL), NULL, NULL); }
-         | IDENTIFIER AS LINKEDLIST     { $$ = createNode("PARAMETER", $1, createNode("TYPE", $3, NULL, NULL, NULL), NULL, NULL); }
-         | IDENTIFIER AS DICTIONARY     { $$ = createNode("PARAMETER", $1, createNode("TYPE", $3, NULL, NULL, NULL), NULL, NULL); }
+parameter: IDENTIFIER AS INT_TYPE       { $$ = createNode("PARAMETER", $1, createNode("DATATYPE", $3, NULL, NULL, NULL), NULL, NULL); }
+         | IDENTIFIER AS CHAR_TYPE      { $$ = createNode("PARAMETER", $1, createNode("DATATYPE", $3, NULL, NULL, NULL), NULL, NULL); }
+         | IDENTIFIER AS FLOAT_TYPE     { $$ = createNode("PARAMETER", $1, createNode("DATATYPE", $3, NULL, NULL, NULL), NULL, NULL); }
+         | IDENTIFIER AS LIST_TYPE      { $$ = createNode("PARAMETER", $1, createNode("DATATYPE", $3, NULL, NULL, NULL), NULL, NULL); }
+         | IDENTIFIER AS POINTER        { $$ = createNode("PARAMETER", $1, createNode("DATATYPE", $3, NULL, NULL, NULL), NULL, NULL); }
+         | IDENTIFIER AS LINKEDLIST     { $$ = createNode("PARAMETER", $1, createNode("DATATYPE", $3, NULL, NULL, NULL), NULL, NULL); }
+         | IDENTIFIER AS DICTIONARY     { $$ = createNode("PARAMETER", $1, createNode("DATATYPE", $3, NULL, NULL, NULL), NULL, NULL); }
          ;
 
 
@@ -269,20 +305,22 @@ return_statement: RETURN exp {$$ = createNode("RETURN",NULL,$2,NULL,NULL);}
 
 function_call: CALL IDENTIFIER LPAREN arguments RPAREN {$$ = createNode("CALL",$2,$4,NULL,NULL);}
              | CALL IDENTIFIER LPAREN RPAREN           {$$ = createNode("CALL",$2,NULL,NULL,NULL);}
-             ;
+;
 
 arguments: exp                  {$$ = $1;}
          | exp COMMA arguments  {$1->next=$3; $$=$1;}
-         ;
+;
+
+run_script: RUN STRING             {$$ = createNode("RUN",$2,NULL,NULL,NULL);}
 
 %%
 
-int main() {
+/*int main() {
     yydebug = 0; 
     printf("Parsing from redirected input...\n");
     yyparse();
     printf("\n--- AST Tree ---\n");
     printTree(root, 0, 1);
     return 0;
-}
+}*/
 
