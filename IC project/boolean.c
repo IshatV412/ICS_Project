@@ -1,38 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "boolean.h"
-#include <string.h> // Include for string functions
+#include <string.h>
 
-#define MAX_LENGTH 50 // Maximum length for variable names
+#define MAX_LENGTH 50 // Max length for variable names
 
-int bool_capacity = 1; // Initial storage capacity
-int bool_size = 0; // Number of currently stored variables
-struct boolean *bool_loc = NULL; // Pointer to dynamically allocated array
-
-// Structure to represent a boolean variable
+// Boolean variable structure
 typedef struct boolean {
-    char name[MAX_LENGTH]; // Name of the variable
-    int value; // Boolean value (0 or 1)
-    int scope; // Scope of the variable
-}boolean;
+    char name[MAX_LENGTH];
+    int value;
+    int scope;
+} boolean;
 
-// int capacity = 1;  // Initial storage capacity
-// int size = 0;  // Number of currently stored variables
-// struct boolean *bool_loc = NULL; // Pointer to dynamically allocated array
+// Global variables
+int bool_capacity = 1;
+int bool_size = 0;
+boolean *bool_loc = NULL;
 
-// Function to initialize storage
+// Initialize boolean variable storage
 void bool_init_storage() {
-    bool_loc = (struct boolean*)malloc(bool_capacity * sizeof(struct boolean));
+    bool_loc = (boolean*)malloc(bool_capacity * sizeof(boolean));
     if (bool_loc == NULL) {
         printf("Memory allocation failed\n");
+        exit(1);
     }
 }
 
-// Function to double the storage capacity
+// Increase storage capacity
 void bool_increase_capacity() {
     bool_capacity *= 2;
-    struct boolean* temp = (struct boolean*)realloc(bool_loc, bool_capacity * sizeof(struct boolean));
+    boolean *temp = (boolean*)realloc(bool_loc, bool_capacity * sizeof(boolean));
     if (temp == NULL) {
         printf("Memory reallocation failed\n");
         exit(1);
@@ -40,15 +37,14 @@ void bool_increase_capacity() {
     bool_loc = temp;
 }
 
-// Function to add a new boolean variable
-void bool_add_variable(char *name, int value, int scope) {
-    // Ensure value is either 0 or 1
+// Add a new boolean variable (ensures unique name in scope)
+void bool_add_variable(const char *name, int value, int scope) {
     if (value != 0 && value != 1) {
         printf("Error: Boolean values must be 0 or 1.\n");
-        return;
+        exit(1);
     }
 
-    // Check if a variable with the same name and scope exists
+    // Check for existing variable in same scope
     for (int i = 0; i < bool_size; i++) {
         if (strcmp(bool_loc[i].name, name) == 0 && bool_loc[i].scope == scope) {
             printf("Error: Variable %s already exists in scope %d!\n", name, scope);
@@ -56,95 +52,135 @@ void bool_add_variable(char *name, int value, int scope) {
         }
     }
 
-    // Increase capacity if needed
     if (bool_size == bool_capacity) {
-        bool_increase_capacity(bool_capacity);
+        bool_increase_capacity();
     }
 
-    // Add new variable
     strcpy(bool_loc[bool_size].name, name);
     bool_loc[bool_size].value = value;
     bool_loc[bool_size].scope = scope;
     bool_size++;
 }
 
-// Function to get a variable by name
-struct boolean* bool_get_variable(char *name) {
+// Get variable by name and scope
+boolean* bool_get_variable(const char *name, int scope) {
     for (int i = 0; i < bool_size; i++) {
-        if (strcmp(bool_loc[i].name, name) == 0) {
+        if (strcmp(bool_loc[i].name, name) == 0 && bool_loc[i].scope == scope) {
             return &bool_loc[i];
         }
     }
     return NULL;
 }
 
-// Logical operations for boolean values
-bool bool_or(bool a, bool b) { return (a || b); }
-bool bool_and(bool a, bool b) { return (a && b); }
-bool bool_not(bool a) { return (!a); }
-bool bool_nor(bool a, bool b) { return (!(a || b)); }
+// Logical operations
+bool bool_or(bool a, bool b)   { return a || b; }
+bool bool_and(bool a, bool b)  { return a && b; }
+bool bool_not(bool a)          { return !a; }
+bool bool_nor(bool a, bool b)  { return !(a || b); }
 bool bool_nand(bool a, bool b) { return !(a && b); }
-bool bool_xor(bool a, bool b) { return (((!a) && b) || ((!b) && a)); }
-bool bool_xnor(bool a, bool b) { return !xor(a, b); }
+bool bool_xor(bool a, bool b)  { return (a && !b) || (!a && b); }
+bool bool_xnor(bool a, bool b) { return !(a ^ b); }
 
-// Function to read a boolean value from the user
-void bool_read_variable(boolean *bool_loc) {
-    int value;
-    printf("Enter boolean value (0 or 1) for %s: ", bool_loc->name);
-    scanf("%d", &value);
-
-    // Validate input
-    if (value != 0 && value != 1) {
-        printf("Invalid input. Only 0 or 1 are allowed.\n");
-        return;
-    }
-
-    bool_add_variable(bool_loc->name, value, scope);
-}
-
-// Function to update the value of an existing variable
-void bool_update_variable(boolean *bool_loc, int new_value) {
+// Update existing variable's value
+void bool_update_variable(const char *name, int scope, int new_value) {
     if (new_value != 0 && new_value != 1) {
         printf("Error: Boolean values must be 0 or 1.\n");
         return;
     }
-    bool_loc->value = new_value;
+
+    boolean *var = bool_get_variable(name, scope);
+    if (var != NULL) {
+        var->value = new_value;
+    } else {
+        printf("Error: Variable %s not found in scope %d.\n", name, scope);
+    }
 }
 
-// Function to delete a specific variable by name
-void bool_delete_variable(boolean *bool_loc) {
-    free(bool_loc);
-}
-
-// Function to free memory allocated for variables of a specific scope
-void bool_free_variables(int scope, int size, struct boolean *bool_loc) {
-    int new_size = 0;
-    for (int i = 0; i < size; i++) {
-        if (bool_loc[i].scope != scope) {
-            bool_loc[new_size] = bool_loc[i];
-            new_size++;
+// Delete a boolean variable by name and scope
+void bool_delete_variable(const char *name, int scope) {
+    for (int i = 0; i < bool_size; i++) {
+        if (strcmp(bool_loc[i].name, name) == 0 && bool_loc[i].scope == scope) {
+            // Shift remaining elements
+            for (int j = i; j < bool_size - 1; j++) {
+                bool_loc[j] = bool_loc[j + 1];
+            }
+            bool_size--;
+            printf("Variable %s in scope %d deleted.\n", name, scope);
+            return;
         }
     }
-    size = new_size;
-    printf("Variables with scope %d have been removed.\n", scope);
+    printf("Variable %s not found in scope %d.\n", name, scope);
 }
 
-// Function to free all allocated memory
-void bool_free_all_memory(struct boolean *bool_loc, int size, int capacity) {
+// Free all variables with a specific scope
+void bool_free_scope_variables(int scope) {
+    int new_size = 0;
+    for (int i = 0; i < bool_size; i++) {
+        if (bool_loc[i].scope != scope) {
+            bool_loc[new_size++] = bool_loc[i];
+        }
+    }
+    int removed = bool_size - new_size;
+    bool_size = new_size;
+    printf("%d variable(s) removed from scope %d.\n", removed, scope);
+}
+
+// Free all allocated memory
+void bool_free_all_memory() {
     free(bool_loc);
     bool_loc = NULL;
-    size = 0;
-    capacity = 1;
-    printf("All memory has been freed.\n");
+    bool_size = 0;
+    bool_capacity = 1;
+    printf("All boolean memory freed.\n");
 }
 
-// Function to display all stored variables
-void bool_display_variables(int size, struct boolean *bool_loc) {
-    if (size == 0) {
+// Display all boolean variables
+void bool_display_variables() {
+    if (bool_size == 0) {
         printf("No variables stored.\n");
         return;
     }
-    for (int i = 0; i < size; i++) {
-        printf("Name: %s, Value: %d, Scope: %d\n", bool_loc[i].name, bool_loc[i].value, bool_loc[i].scope);
+
+    for (int i = 0; i < bool_size; i++) {
+        printf("Name: %s, Value: %d, Scope: %d\n",
+               bool_loc[i].name, bool_loc[i].value, bool_loc[i].scope);
     }
+}
+void bool_test_all() {
+    printf("---- Initializing Boolean System ----\n");
+    bool_init_storage();
+
+    printf("\n---- Adding Boolean Variables ----\n");
+    bool_add_variable("flag", 1, 0);
+    bool_add_variable("done", 0, 0);
+    bool_add_variable("ready", 1, 1);
+    bool_display_variables();
+
+    printf("\n---- Testing Duplicate Entry (Should Fail) ----\n");
+    bool_add_variable("flag", 0, 0); // Duplicate in same scope
+
+    printf("\n---- Updating Variable Value ----\n");
+    bool_update_variable("done", 0, 1);
+    bool_update_variable("missing", 0, 1); // Should show error
+    bool_display_variables();
+
+    printf("\n---- Logical Operations ----\n");
+    printf("true OR false = %d\n", bool_or(1, 0));
+    printf("true AND false = %d\n", bool_and(1, 0));
+    printf("NOT true = %d\n", bool_not(1));
+    printf("true NOR false = %d\n", bool_nor(1, 0));
+    printf("true NAND true = %d\n", bool_nand(1, 1));
+    printf("true XOR false = %d\n", bool_xor(1, 0));
+    printf("true XNOR false = %d\n", bool_xnor(1, 0));
+
+    printf("\n---- Delaeting a Variable ----\n");
+    bool_delete_variable("flag", 0);
+    bool_display_variables();
+
+    printf("\n---- Freeing Variables in Scope 1 ----\n");
+    bool_free_scope_variables(1);
+    bool_display_variables();
+
+    printf("\n---- Final Cleanup ----\n");
+    bool_free_all_memory();
 }
