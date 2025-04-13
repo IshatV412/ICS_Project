@@ -8,18 +8,18 @@ typedef struct {
 } integer;
 
 // Storage management
-integer* int_init_storage(integer *int_loc, int capacity);
-integer* int_increase_capacity(integer *int_loc, int capacity);
-void int_free_variables(int scope, integer *int_loc, int size);
-void int_free_all_memory(integer *int_loc, int size, int capacity);
+void int_init_storage(integer **int_loc, int *capacity, int *size);
+void int_increase_capacity(integer **int_loc, int *capacity);
+void int_free_all(integer **int_loc, int *capacity, int *size);
+void int_free_scope_variables(integer *int_loc, int *size, int scope);
 
 // Variable operations
-integer* int_add_variable(char *name, int value, int scope, integer *int_loc, int size, int capacity);
-integer* int_get_variable(char *name, integer *int_loc, int size);
-integer* int_read_variable(char *name, int scope, integer *int_loc, int size, int capacity);
-void int_print_variable(char *name, integer *int_loc, int size);
-integer* int_update_variable(char *name, int new_value, integer *int_loc, int size);
-integer* int_delete_variable(char *name, integer *int_loc, int size);
+void int_add_variable(integer **int_loc, int *size, int *capacity, char *name, int value, int scope);
+integer* int_get_variable(integer **int_loc, int* size, char *name,int scope);
+void int_read_variable(integer **int_loc, int *size, int *capacity, char *name);
+void int_print_variable(integer *int_loc, int size, char *name);
+void int_update_variable(integer *int_loc, int size, char *name, int new_value);
+void int_delete_variable(integer *int_loc, int *size, char *name);
 integer* int_display_variables(integer *int_loc, int size);
 
 // Arithmetic functions
@@ -53,5 +53,7 @@ int int_is_perfect_square(int n);
 int int_reverse_integer(int n);
 int int_count_digits(int n);
 int int_sum_of_digits(int n);
+
+void int_test();
 
 #endif // INTEGERS_H
