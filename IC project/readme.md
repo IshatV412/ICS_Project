@@ -26,15 +26,19 @@ Run the following command:\
 
 ### Build Instructions
 Run the following commands to build the project:
-`bison -d b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.y` # Generates parser files (b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.c and b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.h)
 
-`flex b24cs1053_b24me1034_b24cm1054_b24ci1017_lexer.l` # Generates lexer file (b24cs1053_b24me1034_b24cm1054_b24ci1017_lex.yy.c)
+`bison -d b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.y` 
+- Generates parser files (b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.c and b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.h)
+
+`flex b24cs1053_b24me1034_b24cm1054_b24ci1017_lexer.l` 
+- Generates lexer file (b24cs1053_b24me1034_b24cm1054_b24ci1017_lex.yy.c)
 
 `gcc -o run b24cs1053_b24me1034_b24cm1054_b24ci1017_parser.tab.c b24cs1053_b24me1034_b24cm1054_b24ci1017_lex.yy.c b24cs1053_b24me1034_b24cm1054_b24ci1017_interpreter.c -lfl -ly` 
 
 
 ### Run Instructions
 To execute a program written in your custom language:
+
 `./run < b24cs1053_b24me1034_b24cm1054_b24ci1017_main.cmm`
 
 b24cs1053_b24me1034_b24cm1054_b24ci1017_main.cmm can be swapped for any file with .cmm extension 
