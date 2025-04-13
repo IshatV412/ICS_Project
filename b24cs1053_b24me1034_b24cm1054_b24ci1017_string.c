@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "string.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_string.h"
 #define MAX_STRING_LENGTH 50  
 int string_capacity = 1;
 int string_size = 0;
