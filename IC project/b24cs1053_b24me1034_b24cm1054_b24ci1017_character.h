@@ -1,5 +1,5 @@
-#ifndef CHARACTER_H
-#define CHARACTER_H
+#ifndef B24CS1053_B24ME1034_B24CM1054_B24CI1017_CHARACTER_H
+#define B24CS1053_B24ME1034_B24CM1054_B24CI1017_CHARACTER_H
 // Structure to represent a character variable
 typedef struct {
     char name[50];
