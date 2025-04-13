@@ -14,20 +14,17 @@ typedef struct{
     node_C_C *start; //stores the address of the first location of the dictionary
 }dictionary_C_C;
 
-typedef struct {
-    dictionary_C_C** dicts;
-    int dict_size;
-    int dict_capacity;
-}dictionary_vector;
-
-void initialise_dict_storage(dictionary_vector** dict_storage);
+void initialise_dict_storage(dictionary_C_C** dict_storage,int* dict_capacity, int* dict_size);
  
+void increase_dict_capacity(dictionary_C_C** dict_storage, int* capacity);
+
+void add_dictionary(dictionary_C_C** dict_storage,int* size, int* capacity, char* name, int len, int scope);
 
 void increase_len(dictionary_C_C *dict, int len);
 
 dictionary_C_C* create_dictionary_C_C(int len, char name[50]);
 
-int insert_C_C(dictionary_C_C *dict, char *key, char *value);
+void insert_C_C(dictionary_C_C *dict, char *key, char *value);
 
 char* getvalue_C_C(dictionary_C_C *dict, char *key);
 
