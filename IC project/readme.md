@@ -38,6 +38,9 @@ To execute a program written in your custom language:
 `./run < b24cs1053_b24me1034_b24cm1054_b24ci1017_main.cmm`
 
 ## Features
+
+- End of Line is given by ' | '
+
 ### 1. Variable Declaration
 You can declare variables of various types:
 - `create <identifier> as <type> |`  
@@ -51,11 +54,15 @@ create dict as dictionary of integer |
 
 ### 2. Arithmetic Operations
 Supports basic arithmetic operations:
-- Addition (`+`), Subtraction (`-`), Multiplication (`*`), Division (`/`), Modulus (`%`) |  
+- Addition (`+`), Subtraction (`-`), Multiplication (`*`), Division (`/`), Modulus (`%`) , Power (`**`)
 Example:  
-`x = (5 + 3) * 4 |`
+`x = ((5**2) + 3) * 4 |`
 
-### 3. Conditional Statements
+### 3. Logical Operations
+Supports basic logical operations:
+- Equality (`==`), Inequality (`!=`), Greater (`>`), Greater or Equal (`=`), Lesser (`<`), Lesser or Equal (`<=`), Logical AND (`and`), Logical OR (`or`)
+
+### 4. Conditional Statements
 Supports `if-then` and `if-then-else` blocks:  
 - `if (exp) then { block }`
 - `if (exp) then { block } else { block }`
@@ -70,7 +77,7 @@ if (x > 10) then {
 ```
 
 
-### 4. Loops
+### 5. Loops
 Supports both `while` loops and `for` loops:  
 - `while (condition) { block }`
 - `loop variable from start to end { block }`
@@ -88,7 +95,7 @@ loop i from 1 to 5 {
 }
 ```
 
-### 5. Functions
+### 6. Functions
 You can define and call functions with parameters and return values:  
 - `let func_name(parameters) generate ret_type { block }`
 - `call func_name(arguments)|`
@@ -103,7 +110,7 @@ return a + b |
 call add(5, 3) |
 ```
 
-### 6. Linked List Operations
+### 7. Linked List Operations
 Perform operations on linked lists:
 - Insert, Delete, Sort, Set values  
 Example:  
@@ -114,7 +121,7 @@ list(set,index,value) | //sets the value provided at the given index
 list(sort) | //sorts the linked list
 ```
 
-### 7. Dictionary Operations
+### 8. Dictionary Operations
 Perform operations on dictionaries:
 - Insert, Delete, Set , Get values
 Example:  
@@ -125,7 +132,7 @@ dict{set,key,value} | //change the value at a given key
 x = dict{get,key} | //returns the value at a given key
 ```
 
-### 8. Input/Output
+### 9. Input/Output
 - `show`: Prints messages or variables to the console 
 - `ask`: Accepts input from the user 
 
