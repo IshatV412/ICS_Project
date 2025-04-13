@@ -18,14 +18,20 @@ intlist *intlist_loc = NULL;
 // Initialize storage
 void init_intlist_storage() {
     intlist_loc = (intlist*) malloc(intlist_capacity * sizeof(intlist));
-    if (!intlist_loc) exit(1);
+    if (!intlist_loc){
+        printf("Memory could not be allocated");
+        exit(1);
+    };
 }
 
 // Resize storage
 void increase_intlist_capacity() {
     intlist_capacity *= 2;
     intlist *temp = (intlist*) realloc(intlist_loc, intlist_capacity * sizeof(intlist));
-    if (!temp) exit(1);
+    if (!temp){
+        printf("Memory could not be allocated");
+        exit(1);
+    };
     intlist_loc = temp;
 }
 
@@ -33,6 +39,7 @@ void increase_intlist_capacity() {
 void add_intlist_variable(const char *name, int size, int init_val, int scope) {
     for (int i = 0; i < intlist_size; i++) {
         if (strcmp(intlist_loc[i].name, name) == 0 && intlist_loc[i].scope == scope) {
+            printf("Variable with same name already exists within this scope.");
             exit(1);
         }
     }
@@ -76,6 +83,7 @@ void update_intlist_element_ptr(intlist *lst, int index, int value) {
     if (lst && index >= 0 && index < lst->size) {
         lst->value[index] = value;
     } else {
+        printf("Memory could not be allocated");
         exit(1);
     }
 }
@@ -93,7 +101,10 @@ void delete_intlist_variable_ptr(intlist *lst) {
     }
 
     if (found) intlist_size--;
-    else exit(1);
+    else{
+        printf("Variable not found");
+        exit(1);
+    }
 }
 
 // Display all variables
