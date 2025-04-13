@@ -1,53 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "linked_list.h"
 
-//structure for each node of linked list
-struct node {
-    int value;
-    struct node* ptr_next;
-};
 
-//struct for linked list 
-typedef struct {
-    char name[50];
-    int length;
-    struct node* head_ptr; //pointer to the head node
-    struct node* tail_ptr; //pointer to the tail node
-} linked_list;
-
-//struct to create a vector to store the linked lists
-typedef struct {
-    linked_list** lists;
-    int size;
-    int capacity;
-} linked_list_vector;
-
-void initialise_vector(linked_list_vector** storage) {
-    *storage = (linked_list_vector*)malloc(sizeof(linked_list_vector));
-    if (*storage == NULL) {
-        printf("Memory Allocation Failed.\n");
-        return;
-    }
-    (*storage)->capacity = 1;
-    (*storage)->size = 0;
-    (*storage)->lists = (linked_list**)malloc(sizeof(linked_list*) * (*storage)->capacity);
-
-    if ((*storage)->lists == NULL) {
-        printf("Memory Allocation Failed\n");
-        free(*storage);
-        *storage = NULL;
-        return;
+void initialise_ll_storage(linked_list** ll_storage,int* ll_capacity, int* ll_size) {
+    *ll_capacity = 1;
+    *ll_size = 0;
+    *ll_storage = (linked_list*)malloc((*ll_capacity) * sizeof(linked_list));
+    if (*ll_storage == NULL) {
+        exit(1);
     }
 }
 
-void initialise_and_add_list(linked_list_vector* vector, char* name, int length) {
-    if (vector == NULL) {
-        printf("Invalid vector pointer.\n");
-        return;
+void increase_ll_capacity(linked_list** ll_storage, int* ll_capacity) {
+    *ll_capacity *= 2;
+    linked_list* temp = realloc(*ll_storage,(*ll_capacity) * sizeof(linked_list));
+    if (temp == NULL) {
+        exit(1);
+    }
+    *ll_storage = temp;
+}
+
+
+
+
+void initialise_and_add_list(linked_list** ll_storage, int* ll_size, int* ll_capacity, char* name, int length, int scope) {
+    if (*ll_size == *ll_capacity) {
+        increase_ll_capacity(ll_storage, ll_capacity);
     }
 
-    // Allocate memory for the linked list
     linked_list* list = (linked_list*)malloc(sizeof(linked_list));
     if (list == NULL) {
         printf("Memory Allocation Failed for linked list.\n");
@@ -56,46 +38,33 @@ void initialise_and_add_list(linked_list_vector* vector, char* name, int length)
 
     strncpy(list->name, name, sizeof(list->name) - 1);
     list->name[sizeof(list->name) - 1] = '\0';
-    list->length = length;
+    list->length = 0;
     list->head_ptr = NULL;
     list->tail_ptr = NULL;
 
-    // Initialize linked list nodes with value 0
     for (int i = 0; i < length; i++) {
         struct node* new_node = (struct node*)malloc(sizeof(struct node));
         if (new_node == NULL) {
             printf("Memory Allocation Failed for node.\n");
             return;
         }
-
         new_node->value = 0;
         new_node->ptr_next = NULL;
 
-        if (list->head_ptr == NULL) { // First node
+        if (list->head_ptr == NULL) {
             list->head_ptr = new_node;
             list->tail_ptr = new_node;
-        } else {                        //append tail node for later nodes
+        } else {
             list->tail_ptr->ptr_next = new_node;
             list->tail_ptr = new_node;
         }
+        list->length++;
     }
 
-    // Expand vector capacity if needed
-    if (vector->size == vector->capacity) {
-        vector->capacity *= 2;
-        linked_list** temp = (linked_list**)realloc(vector->lists, sizeof(linked_list*) * vector->capacity);
-        if (temp == NULL) {
-            printf("Memory Allocation Failed while resizing vector.\n");
-            free(list); // Prevent memory leak
-            return;
-        }
-        vector->lists = temp;
-    }
-
-    // Add linked list to vector
-    vector->lists[vector->size] = list;
-    vector->size++;
+    (ll_storage)[*ll_size] = list;
+    (*ll_size)++;
 }
+
 //function to insert element at a given position
 void insert_element(linked_list* list, int position, int value) {
     if (position < 0 || position > list->length) { //validating position
@@ -136,7 +105,7 @@ void insert_element(linked_list* list, int position, int value) {
 //function to modify the value at a given position
 void modify_value(linked_list* list, int position, int value) {
     
-    if (position<0 || position >= list->length) { //validating position
+    if (position < 0 || position >= list->length) { //validating position
         printf("Invalid Position");
         return;
     }
@@ -253,7 +222,7 @@ void delete_node(linked_list* list,int position) {
     free(delete_node);
 }
 //function to delete the list itself
-void delete_list(linked_list* list,linked_list_vector* storage) {
+void delete_list(linked_list* list,linked_list** ll_storage,int* ll_size) {
     if (list == NULL) {
         return;
     }
@@ -264,9 +233,12 @@ void delete_list(linked_list* list,linked_list_vector* storage) {
         free(temp);
         temp = next;
     }
-    for (int i = 0; i < storage->size; i++) {
-        if (storage->lists[i] == list) {
-            storage->lists[i] = NULL;
+    for (int i = 0; i < *ll_size; i++) {
+        if (ll_storage[i] == list) {
+            for (int j = i; j < *ll_size - 1; j++) {
+                ll_storage[j] = ll_storage[j + 1];
+            }
+            (*ll_size)--;
             break;
         }
     }
@@ -288,60 +260,58 @@ void empty_list(linked_list* list) {
     list->tail_ptr = NULL;
     list->length = 0;
 }
+linked_list* get_linked_list(linked_list** storage, int size, char* name) {
+    if (storage == NULL || name == NULL) {
+        printf("Invalid storage or name.\n");
+        return NULL;
+    }
+
+    for (int i = 0; i < size; i++) {
+        if (strcmp(storage[i]->name, name) == 0) {
+            return storage[i]; // Found the list
+        }
+    }
+
+    printf("Linked list with name \"%s\" not found.\n", name);
+    return NULL;
+}
+
 
 void test_operations() {
-    linked_list_vector* vector;
-    initialise_vector(&vector);
+    linked_list** ll_storage;
+    int capacity, size;
+    initialise_ll_storage(ll_storage, &capacity, &size);
 
-    // Create and add linked lists
-    initialise_and_add_list(vector, "List1", 5);
-    initialise_and_add_list(vector, "List2", 3);
+    initialise_and_add_list(ll_storage, &size, &capacity, "List1", 5,0);
+    initialise_and_add_list(ll_storage, &size, &capacity, "List2", 3,1);
 
-    for (int i = 0; i < vector->size; i++) {
-        printf("%s: ", vector->lists[i]->name);
-        print_list(vector->lists[i]);
+    for (int i = 0; i < size; i++) {
+        print_list(ll_storage[i]);
     }
 
-    // Insert elements
-    insert_element(vector->lists[0], 2, 99);
-    insert_element(vector->lists[1], 1, 42);
+    insert_element(ll_storage[0], 2, 99);
+    insert_element(ll_storage[1], 1, 42);
+    modify_value(ll_storage[0], 3, 88);
+    modify_value(ll_storage[1], 0, 77);
 
-    // Modify values
-    modify_value(vector->lists[0], 3, 88);
-    modify_value(vector->lists[1], 0, 77);
-
-    for (int i = 0; i < vector->size; i++) {
-        printf("%s: ", vector->lists[i]->name);
-        print_list(vector->lists[i]);
-    }
-    
-    // Read values
-    printf("Value at index 2 in List1: %d\n", read_node(vector->lists[0], 2));
-    printf("Value at index 1 in List2: %d\n", read_node(vector->lists[1], 1));
-
-    sort_list(vector->lists[0]);
-    sort_list(vector->lists[1]);
-
-    for (int i = 0; i < vector->size; i++) {
-        printf("%s: ", vector->lists[i]->name);
-        print_list(vector->lists[i]);
+    for (int i = 0; i < size; i++) {
+        print_list(ll_storage[i]);
     }
 
+    sort_list(ll_storage[0]);
+    sort_list(ll_storage[1]);
+    for (int i = 0; i < size; i++) {
+        print_list(ll_storage[i]);
+    }
 
+    delete_node(ll_storage[0], 2);
+    print_list(ll_storage[0]);
 
-    // Delete a node
-    delete_node(vector->lists[0], 2);
-    printf("List1 after deleting index 2: ");
-    print_list(vector->lists[0]);
-
-    // Delete entire list
-    delete_list(vector->lists[1], vector);
+    delete_list(ll_storage, &size, ll_storage[1]);
     printf("List2 deleted.\n");
 
-    // Cleanup
-    delete_list(vector->lists[0], vector);
-    free(vector->lists);
-    free(vector);
+    delete_list(ll_storage, &size, ll_storage[0]);
+    free(ll_storage);
     printf("Memory freed and program terminated.\n");
 }
 
