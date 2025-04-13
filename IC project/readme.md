@@ -62,6 +62,9 @@ Example:
 Supports basic logical operations:
 - Equality (`==`), Inequality (`!=`), Greater (`>`), Greater or Equal (`=`), Lesser (`<`), Lesser or Equal (`<=`), Logical AND (`and`), Logical OR (`or`)
 
+Example:
+`if (((x==4) or (x>=3)) and ((x<7) or (x<=1))) ...`
+
 ### 4. Conditional Statements
 Supports `if-then` and `if-then-else` blocks:  
 - `if (exp) then { block }`
