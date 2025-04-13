@@ -39,7 +39,7 @@ void empty_list(linked_list* list);
 void sort_list(linked_list* list);
 void print_values(linked_list* list);
 void print_list(linked_list* list);
-linked_list* get_linked_list(linked_list** storage, int size, char* name);
+linked_list* get_linked_list(linked_list** storage, int size, char* name,int scope);
 
 
 // Test function
