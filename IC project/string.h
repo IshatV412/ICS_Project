@@ -9,15 +9,7 @@ typedef struct {
     int scope;                      // Scope of the string
 } string;
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "string.h"
 #define MAX_STRING_LENGTH 50  // Maximum allowed string length
-
-int string_capacity = 1;
-int string_size = 0;
-string *string_loc = NULL;
 
 // Initialize string storage
 void init_string_storage();
