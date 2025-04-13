@@ -20,7 +20,7 @@ void increase_dict_capacity(dictionary_C_C** dict_storage, int* capacity) {
     }
     *dict_storage = temp;
 }
-dictionary_C_C* get_linked_list(dictionary_C_C** dict_storage, int* dict_size, char* name, int scope) {
+dictionary_C_C* get_dict(dictionary_C_C** dict_storage, int* dict_size, char* name, int scope) {
     if (dict_size == NULL || name == NULL) {
         printf("Invalid storage or name.\n");
         return NULL;
