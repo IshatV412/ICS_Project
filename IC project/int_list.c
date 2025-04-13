@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "intlist.h"
+#include "int_list.h"
 #define MAX_LIST_NAME 50
 typedef struct {
     char name[50];
