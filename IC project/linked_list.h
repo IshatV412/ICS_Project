@@ -3,7 +3,6 @@
 
 #define MAX_NAME_LENGTH 50
 
-//structure for each node of linked list
 struct node {
     int value;
     struct node* ptr_next;
