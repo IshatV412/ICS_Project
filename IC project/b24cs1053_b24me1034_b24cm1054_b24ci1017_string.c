@@ -55,7 +55,7 @@ void add_string_variable(char *name, char *value, int scope) {
     string_loc[string_size].name[sizeof(string_loc[string_size].name) - 1] = '\0';
 
     strncpy(string_loc[string_size].value, value, MAX_STRING_LENGTH - 1);
-    string_loc[string_size].value[MAX_STRING_LENGTH - 1] = '$';  // Custom terminator
+    string_loc[string_size].value[MAX_STRING_LENGTH - 1] = '\0';  //terminator
 
     string_loc[string_size].scope = scope;
     string_size++;
@@ -82,7 +82,7 @@ string* get_string_variable(char *name, int current_scope) {
 void update_string_variable_ptr(string *var, char *new_value) {
     if (var != NULL) {
         strncpy(var->value, new_value, MAX_STRING_LENGTH - 1);
-        var->value[MAX_STRING_LENGTH - 1] = '$';  // Ensure custom terminator
+        var->value[MAX_STRING_LENGTH - 1] = '\0';  // Ensure terminator
     } else {
         //printf("Error: String variable not found for update\n");
         exit(1);
