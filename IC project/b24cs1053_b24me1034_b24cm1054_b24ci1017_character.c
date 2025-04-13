@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "character.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_character.h"
 
 int char_capacity = 1;
 int char_size = 0;
