@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "character.h"
 
 int char_capacity = 1;
 int char_size = 0;
@@ -22,6 +21,17 @@ void increase_char_capacity() {
     char_loc = temp;
 }
 
+character* get_char_variable(char *name, int scope) {
+    character* latest = NULL;
+    for (int i = 0; i < char_size; i++) {
+        if (strcmp(char_loc[i].name, name) == 0 && char_loc[i].scope <= scope) {
+            if (latest == NULL || char_loc[i].scope > latest->scope) {
+                latest = &char_loc[i];
+            }
+        }
+    }
+    return latest;
+}
 // Function to add a new character variable and return its pointer
 character* add_char_variable(char *name, char value, int scope) {
     if (char_size == char_capacity) {
@@ -34,14 +44,14 @@ character* add_char_variable(char *name, char value, int scope) {
 }
 
 // Function to update value via pointer
-void update_char_variable_ptr(character *var, char new_value) {
+void update_char_variable(character *var, char new_value) {
     if (var != NULL) {
         var->value = new_value;
     }
 }
 
 // Function to print variable via pointer
-void print_char_variable_ptr(character *var) {
+void print_char_variable(character *var) {
     if (var != NULL) {
         printf("Variable %s = %c\n", var->name, var->value);
     }
@@ -83,7 +93,7 @@ char int_to_char(int n) {
 int get_ascii_value(char c) { return (int)c; }
 
 // Function to delete a variable via pointer
-void delete_char_variable_ptr(character *var) {
+void delete_char_variable(character *var) {
     int index = -1;
     for (int i = 0; i < char_size; i++) {
         if (&char_loc[i] == var) {
@@ -116,65 +126,4 @@ void free_char_memory() {
     char_loc = NULL;
     char_size = 0;
     char_capacity = 1;
-}
-
-// Function to read from user and return pointer
-character* read_char_variable(char *name, int scope) {
-    char value;
-    scanf(" %c", &value);
-    return add_char_variable(name, value, scope);
-}
-void test_operations() {
-    init_char_storage();
-
-    // Add some variables
-    character *a = add_char_variable("a", 'x', 1);
-    character *b = add_char_variable("b", 'y', 2);
-    character *c = add_char_variable("c", 'z', 3);
-
-    printf("After adding variables:\n");
-    display_char_variables();
-    printf("\n");
-
-    // Print individual variables
-    printf("Printing individual variables:\n");
-    print_char_variable_ptr(a);
-    print_char_variable_ptr(b);
-    print_char_variable_ptr(c);
-    printf("\n");
-
-    // Update variable 'a'
-    update_char_variable_ptr(a, 'A');
-    update_char_variable_ptr(b, 'B');
-    printf("After updating variables 'a' and 'b':\n");
-    display_char_variables();
-    printf("\n");
-
-    // Use character functions
-    printf("Character functions on variable 'c' (%c):\n", c->value);
-    printf("Uppercase: %c\n", to_uppercase(c->value));
-    printf("Is vowel? %s\n", is_vowel(c->value) ? "Yes" : "No");
-    printf("ASCII value: %d\n", get_ascii_value(c->value));
-    printf("\n");
-
-    // Delete variable 'b'
-    delete_char_variable_ptr(b);
-    printf("After deleting variable 'b':\n");
-    display_char_variables();
-    printf("\n");
-
-    // Read a variable from user
-    printf("Enter a character for new variable 'd': ");
-    character *d = read_char_variable("d", 4);
-    printf("After reading variable 'd':\n");
-    print_char_variable_ptr(d);
-    printf("\n");
-
-    // Final state
-    printf("Final stored variables:\n");
-    display_char_variables();
-
-    // Clean up
-    free_char_memory();
-    return;
 }
