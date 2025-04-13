@@ -2,11 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-typedef struct {
-    char name[50];
-    char value;
-    int scope; // Kept for debugging/display but no longer used for access
-} character;
+#include "character.h"
 
 int char_capacity = 1;
 int char_size = 0;
@@ -127,4 +123,58 @@ character* read_char_variable(char *name, int scope) {
     char value;
     scanf(" %c", &value);
     return add_char_variable(name, value, scope);
+}
+void test_operations() {
+    init_char_storage();
+
+    // Add some variables
+    character *a = add_char_variable("a", 'x', 1);
+    character *b = add_char_variable("b", 'y', 2);
+    character *c = add_char_variable("c", 'z', 3);
+
+    printf("After adding variables:\n");
+    display_char_variables();
+    printf("\n");
+
+    // Print individual variables
+    printf("Printing individual variables:\n");
+    print_char_variable_ptr(a);
+    print_char_variable_ptr(b);
+    print_char_variable_ptr(c);
+    printf("\n");
+
+    // Update variable 'a'
+    update_char_variable_ptr(a, 'A');
+    update_char_variable_ptr(b, 'B');
+    printf("After updating variables 'a' and 'b':\n");
+    display_char_variables();
+    printf("\n");
+
+    // Use character functions
+    printf("Character functions on variable 'c' (%c):\n", c->value);
+    printf("Uppercase: %c\n", to_uppercase(c->value));
+    printf("Is vowel? %s\n", is_vowel(c->value) ? "Yes" : "No");
+    printf("ASCII value: %d\n", get_ascii_value(c->value));
+    printf("\n");
+
+    // Delete variable 'b'
+    delete_char_variable_ptr(b);
+    printf("After deleting variable 'b':\n");
+    display_char_variables();
+    printf("\n");
+
+    // Read a variable from user
+    printf("Enter a character for new variable 'd': ");
+    character *d = read_char_variable("d", 4);
+    printf("After reading variable 'd':\n");
+    print_char_variable_ptr(d);
+    printf("\n");
+
+    // Final state
+    printf("Final stored variables:\n");
+    display_char_variables();
+
+    // Clean up
+    free_char_memory();
+    return;
 }
