@@ -11,14 +11,13 @@ typedef struct {
 void int_init_storage();
 void int_increase_capacity();
 int_var* int_get_var(char *name, int scope);
-void int_add_variable(int_var *new_var);
 void int_update_variable(int_var *var, int new_value);
 void int_print_variable(int_var *var);
 void int_delete_variable(int_var *var);
 void int_free_scope(int scope);
 void int_free_all();
 void int_display_variables();
-
+void int_add_variable(const char *name, int scope, int value);
 int int_add(int a, int b);
 int int_subtract(int a, int b);
 int int_multiply(int a, int b);
