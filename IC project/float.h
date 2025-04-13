@@ -1,6 +1,5 @@
 #ifndef FLOAT_H
 #define FLOAT_H
-
 #define MAX_NAME_LEN 50
 
 // Structure definition for decimal type
@@ -10,23 +9,26 @@ typedef struct {
     int scope;
 } decimal;
 
-// Initialization and Memory Management
-decimal* init_decimal_storage(int* capacity, int* size);
-decimal* increase_capacity(decimal* arr, int* capacity);
-void free_all(decimal* arr);
-int free_scope(decimal* arr, int size, int scope);
-
-// Add, Get, Update, Delete
-decimal* add_decimal_variable(decimal* arr, int* size, int* capacity, const char* name, float value, int scope);
-decimal* get_decimal_variable(decimal* arr, int size, const char* name);
-void update_decimal_variable(decimal* arr, int size, const char* name, float value);
-int delete_decimal_variable(decimal* arr, int size, const char* name);
-
-// I/O and Display
-void display(decimal* arr, int size);
-decimal* read_decimal_variable(decimal* arr, int* size, int* capacity, const char* name, int scope);
-void print_decimal_variable(decimal* arr, int size, const char* name);
-
+// Initialize float storage
+void init_float_storage();
+// Increase capacity when needed
+void increase_float_capacity();
+// Add a new float variable
+void add_float_variable(char *name, float value, int scope);
+// Get variable by name and highest available scope
+decimal* get_float_variable(char* name, int scope);
+// Update using pointer
+void update_float_variable_ptr(decimal *var, float new_value);
+// Print using pointer
+void print_float_variable_ptr(decimal *var);
+// Delete using pointer
+void delete_float_variable_ptr(decimal *var);
+// Display all variables
+void display_variables();
+// Free variables by scope
+void free_variables(int scope);
+// Free all memory
+void free_all_memory();
 // Arithmetic Operations
 float add(float a, float b);
 float subtract(float a, float b);
