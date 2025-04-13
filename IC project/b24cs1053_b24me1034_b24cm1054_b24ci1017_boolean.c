@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "boolean.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_boolean.h"
 #define MAX_LENGTH 50 // Max length for variable names
 
 // Global variables
