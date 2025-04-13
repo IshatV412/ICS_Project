@@ -9,7 +9,7 @@ typedef struct {
 } integer;
 
 // Function to initialize storage
-void init_integer_array(integer **int_loc, int *capacity, int *size) {
+void int_init_storage(integer **int_loc, int *capacity, int *size) {
     *capacity = 1;
     *size = 0;
     *int_loc = (integer *)malloc(sizeof(integer) * (*capacity));
@@ -20,7 +20,7 @@ void init_integer_array(integer **int_loc, int *capacity, int *size) {
 }
 
 // Function to increase capacity
-void increase_capacity(integer **int_loc, int *capacity) {
+void int_increase_capacity(integer **int_loc, int *capacity) {
     *capacity *= 2;
     integer *temp = (integer *)realloc(*int_loc, sizeof(integer) * (*capacity));
     if (temp == NULL) {
@@ -31,7 +31,7 @@ void increase_capacity(integer **int_loc, int *capacity) {
 }
 
 // Add variable
-void add_variable(integer **int_loc, int *size, int *capacity, const char *name, int value, int scope) {
+void int_add_variable(integer **int_loc, int *size, int *capacity, char *name, int value, int scope) {
     if (*size == *capacity) {
         increase_capacity(int_loc, capacity);
     }
@@ -42,56 +42,66 @@ void add_variable(integer **int_loc, int *size, int *capacity, const char *name,
 }
 
 // Get variable
-integer* get_variable(integer *int_loc, int size, const char *name) {
-    for (int i = 0; i < size; i++) {
-        if (strcmp(int_loc[i].name, name) == 0) {
-            return &int_loc[i];
+integer* int_get_variable(integer **int_loc, int* size, char *name, int scope) {
+    if(size == NULL || name == NULL) {
+        printf("Invalid name.\n");
+        return NULL;
+    }
+    integer* latest = NULL;
+    for (int i = 0; i < *size; i++) {
+        if ((strcmp(int_loc[i]->name,name) == 0) && int_loc[i]->scope <= scope) {
+            if (latest == NULL || int_loc[i]->scope > latest->scope) {
+                latest = int_loc[i];
+            }
         }
     }
-    return NULL;
+    if (latest == NULL) {
+        printf("Integer with name \"%s\" not found.\n", name);
+    }
+    return latest;
 }
 
 // Arithmetic operations
-int add(int a, int b) { return a + b; }
-int subtract(int a, int b) { return a - b; }
-int multiply(int a, int b) { return a * b; }
-int divide(int a, int b) { return (b != 0) ? (a / b) : (printf("Division by zero!\n"), 0); }
-int modulus(int a, int b) { return a % b; }
-int power(int a, int b) { int result = 1; for (int i = 0; i < b; i++) result *= a; return result; }
-int absolute(int a) { return abs(a); }
+int int_add(int a, int b) { return a + b; }
+int int_subtract(int a, int b) { return a - b; }
+int int_multiply(int a, int b) { return a * b; }
+int int_divide(int a, int b) { return (b != 0) ? (a / b) : (printf("Division by zero!\n"), 0); }
+int int_modulus(int a, int b) { return a % b; }
+int int_power(int a, int b) { int result = 1; for (int i = 0; i < b; i++) result *= a; return result; }
+int int_absolute(int a) { return abs(a); }
 
 // Logical
-int logical_and(int a, int b) { return a && b; }
-int logical_or(int a, int b) { return a || b; }
-int logical_not(int a) { return !a; }
+int int_logical_and(int a, int b) { return a && b; }
+int int_logical_or(int a, int b) { return a || b; }
+int int_logical_not(int a) { return !a; }
 
 // Relational
-int equals(int a, int b) { return a == b; }
-int not_equals(int a, int b) { return a != b; }
-int greater_than(int a, int b) { return a > b; }
-int less_than(int a, int b) { return a < b; }
-int greater_equals(int a, int b) { return a >= b; }
-int less_equals(int a, int b) { return a <= b; }
+int int_equals(int a, int b) { return a == b; }
+int int_not_equals(int a, int b) { return a != b; }
+int int_greater_than(int a, int b) { return a > b; }
+int int_less_than(int a, int b) { return a < b; }
+int int_greater_equals(int a, int b) { return a >= b; }
+int int_less_equals(int a, int b) { return a <= b; }
 
 // More integer functions
-int factorial(int n) { if (n < 0) return -1; int f = 1; for (int i = 1; i <= n; i++) f *= i; return f; }
-int gcd(int a, int b) { while (b != 0) { int t = b; b = a % b; a = t; } return a; }
-int lcm(int a, int b) { return (a * b) / gcd(a, b); }
-int is_prime(int n) { if (n < 2) return 0; for (int i = 2; i*i <= n; i++) if (n % i == 0) return 0; return 1; }
-int is_perfect_square(int n) { for (int i = 0; i*i <= n; i++) if (i*i == n) return 1; return 0; }
-int reverse_integer(int n) { int r = 0; while (n != 0) { r = r*10 + n%10; n /= 10; } return r; }
-int count_digits(int n) { if (n == 0) return 1; int c = 0; while (n != 0) { c++; n /= 10; } return c; }
-int sum_of_digits(int n) { int s = 0; while (n != 0) { s += n % 10; n /= 10; } return s; }
+int int_factorial(int n) { if (n < 0) return -1; int f = 1; for (int i = 1; i <= n; i++) f *= i; return f; }
+int int_gcd(int a, int b) { while (b != 0) { int t = b; b = a % b; a = t; } return a; }
+int int_lcm(int a, int b) { return (a * b) / gcd(a, b); }
+int int_is_prime(int n) { if (n < 2) return 0; for (int i = 2; i*i <= n; i++) if (n % i == 0) return 0; return 1; }
+int int_is_perfect_square(int n) { for (int i = 0; i*i <= n; i++) if (i*i == n) return 1; return 0; }
+int int_reverse_integer(int n) { int r = 0; while (n != 0) { r = r*10 + n%10; n /= 10; } return r; }
+int int_count_digits(int n) { if (n == 0) return 1; int c = 0; while (n != 0) { c++; n /= 10; } return c; }
+int int_sum_of_digits(int n) { int s = 0; while (n != 0) { s += n % 10; n /= 10; } return s; }
 
 // I/O and management
-void read_variable(integer **int_loc, int *size, int *capacity, const char *name, int scope) {
+void int_read_variable(integer **int_loc, int *size, int *capacity, char *name) {
     int value;
     printf("Enter value for %s: ", name);
-    scanf("%d", &value);
-    add_variable(int_loc, size, capacity, name, value, scope);
+    scanf("%d", &value); 
+    add_variable(int_loc, size, capacity, name, value);
 }
 
-void print_variable(integer *int_loc, int size, const char *name) {
+void int_print_variable(integer *int_loc, int size, char *name) {
     integer *var = get_variable(int_loc, size, name);
     if (var) {
         printf("%s = %d\n", var->name, var->value);
@@ -100,7 +110,7 @@ void print_variable(integer *int_loc, int size, const char *name) {
     }
 }
 
-void update_variable(integer *int_loc, int size, const char *name, int new_value) {
+void int_update_variable(integer *int_loc, int size, char *name, int new_value) {
     integer *var = get_variable(int_loc, size, name);
     if (var) {
         var->value = new_value;
@@ -110,7 +120,7 @@ void update_variable(integer *int_loc, int size, const char *name, int new_value
     }
 }
 
-void delete_variable(integer *int_loc, int *size, const char *name) {
+void int_delete_variable(integer *int_loc, int *size, char *name) {
     int new_size = 0;
     for (int i = 0; i < *size; i++) {
         if (strcmp(int_loc[i].name, name) != 0) {
@@ -125,7 +135,7 @@ void delete_variable(integer *int_loc, int *size, const char *name) {
     *size = new_size;
 }
 
-void free_scope_variables(integer *int_loc, int *size, int scope) {
+void int_free_scope_variables(integer *int_loc, int *size, int scope) {
     int new_size = 0;
     for (int i = 0; i < *size; i++) {
         if (int_loc[i].scope != scope) {
@@ -136,7 +146,7 @@ void free_scope_variables(integer *int_loc, int *size, int scope) {
     printf("Variables with scope %d removed.\n", scope);
 }
 
-void display_variables(integer *int_loc, int size) {
+void int_display_variables(integer *int_loc, int size) {
     if (size == 0) {
         printf("No variables stored.\n");
         return;
@@ -146,7 +156,7 @@ void display_variables(integer *int_loc, int size) {
     }
 }
 
-void free_all(integer **int_loc, int *capacity, int *size) {
+void int_free_all(integer **int_loc, int *capacity, int *size) {
     free(*int_loc);
     *int_loc = NULL;
     *capacity = 0;
@@ -155,7 +165,7 @@ void free_all(integer **int_loc, int *capacity, int *size) {
 }
 
 // Main to test
-int main() {
+void int_test() {
     integer *int_loc = NULL;
     int capacity = 0, size = 0;
 
@@ -192,5 +202,5 @@ int main() {
     printf("\nFreeing all memory.\n");
     free_all(&int_loc, &capacity, &size);
 
-    return 0;
+    return;
 }
