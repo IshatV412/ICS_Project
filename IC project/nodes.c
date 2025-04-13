@@ -72,7 +72,7 @@ float eval_expr(struct treeNode* ptr){
         return atof(ptr->value);
     }
     float left = eval_expr(ptr->left);
-    float right = eval_exptr(ptr->right);
+    float right = eval_expr(ptr->right);
 
     // update functionality from file 
     if (strcmp(ptr->type, "ADD") == 0) {
@@ -150,7 +150,7 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
         }
         else if (strcmp(ptr->type, "SHOW") == 0) {
             struct treeNode* ptr1 = ptr->left;
-            char c[1000] = ptr->left->value;
+            strncpy(char c[1000],ptr->left->value,1000);
             for(int i=0; c[i]!='\0';i++){
                 if(c[i]=='\\' && c[i+1]=='n'){
                     printf("\n");
@@ -241,6 +241,8 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
             // Initialize loop variable
             struct treeNode* initNode = ptr->left;
             int_add_variable(get_int_var(initNode->value, scope), eval_expr(initNode->left), scope);
+            //int_add_variable(initNode->value, eval_expr(initNode->left), scope);
+
             if (initNode != NULL) {
                 int_update_variable(get_int_var(initNode->value, scope), eval_expr(initNode->left));
             }
