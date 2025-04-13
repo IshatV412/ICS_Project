@@ -37,6 +37,8 @@ Run the following commands to build the project:
 To execute a program written in your custom language:
 `./run < b24cs1053_b24me1034_b24cm1054_b24ci1017_main.cmm`
 
+b24cs1053_b24me1034_b24cm1054_b24ci1017_main.cmm can be swapped for any file with .cmm extension 
+
 ## Features
 
 - End of Line is given by ' | '
@@ -97,8 +99,10 @@ loop i from 1 to 5 {
     show("%d",i) |
 }
 ```
+### 6. Next and Leave statements
+You can use `next` to skip the current iteration of the loop and `leave` to break out of the loop.
 
-### 6. Functions
+### 7. Functions
 You can define and call functions with parameters and return values:  
 - `let func_name(parameters) generate ret_type { block }`
 - `call func_name(arguments)|`
@@ -113,7 +117,7 @@ return a + b |
 call add(5, 3) |
 ```
 
-### 7. Linked List Operations
+### 8. Linked List Operations
 Perform operations on linked lists:
 - Insert, Delete, Sort, Set values  
 Example:  
@@ -124,7 +128,7 @@ list(set,index,value) | //sets the value provided at the given index
 list(sort) | //sorts the linked list
 ```
 
-### 8. Dictionary Operations
+### 9. Dictionary Operations
 Perform operations on dictionaries:
 - Insert, Delete, Set , Get values
 Example:  
@@ -135,15 +139,20 @@ dict{set,key,value} | //change the value at a given key
 x = dict{get,key} | //returns the value at a given key
 ```
 
-### 9. Input/Output
+### 10. Input/Output
 - `show`: Prints messages or variables to the console 
 - `ask`: Accepts input from the user 
 
+Example:
+```c
+show("Hello my name is %s",name)|
+ask("%d",int)|
+```
 ---
 
 ## How It Works
-### 1. Parsing
-The language uses Bison to parse the input program into an Abstract Syntax Tree (AST). The grammar rules are defined in `parser.y`, which includes:
+### 1. Lexing and Parsing
+The language uses Flex to lex and Bison to parse the input program into an Abstract Syntax Tree (AST). The tokens are defined in `lexer.l` and grammar rules are defined in `parser.y`, which includes:
 - Tokens for keywords like `if`, `while`, etc |
 - Rules for statements (`var_dec`, `assignment`, etc) |
 - Operator precedence for arithmetic and logical operations |
