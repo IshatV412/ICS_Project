@@ -2,15 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
+#include "boolean.h"
 #define MAX_LENGTH 50 // Max length for variable names
-
-// Boolean variable structure
-typedef struct boolean {
-    char name[MAX_LENGTH];
-    int value;
-    int scope;
-} boolean;
 
 // Global variables
 int bool_capacity = 1;
