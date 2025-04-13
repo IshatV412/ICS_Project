@@ -39,7 +39,6 @@ void initialise_and_add_list(linked_list** ll_storage, int* ll_size, int* ll_cap
     strncpy(list->name, name, sizeof(list->name) - 1);
     list->name[sizeof(list->name) - 1] = '\0';
     list->length = 0;
-    list->scope = scope;
     list->head_ptr = NULL;
     list->tail_ptr = NULL;
 
@@ -261,17 +260,17 @@ void empty_list(linked_list* list) {
     list->tail_ptr = NULL;
     list->length = 0;
 }
-linked_list* get_linked_list(linked_list** storage, int size, char* name, int scope) {
-    if (storage == NULL || name == NULL) {
+linked_list* get_linked_list(linked_list** ll_storage, int* ll_size, char* name, int scope) {
+    if (ll_size == NULL || name == NULL) {
         printf("Invalid storage or name.\n");
         return NULL;
     }
     linked_list* latest = NULL;
 
-    for (int i = 0; i < size; i++) {
-        if ((strcmp(storage[i]->name, name) == 0) && storage[i]->scope <= scope ) {
-            if (latest == NULL || storage[i]->scope > latest->scope) {
-                latest = storage[i];
+    for (int i = 0; i < *ll_size; i++) {
+        if ((strcmp(ll_storage[i]->name, name) == 0) && ll_storage[i]->scope <= scope ) {
+            if (latest == NULL || ll_storage[i]->scope > latest->scope) {
+                latest = ll_storage[i];
             }
         }
     }
