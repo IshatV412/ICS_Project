@@ -16,11 +16,10 @@ void int_free_scope_variables(integer *int_loc, int *size, int scope);
 // Variable operations
 void int_add_variable(integer **int_loc, int *size, int *capacity, char *name, int value, int scope);
 integer* int_get_variable(integer **int_loc, int* size, char *name,int scope);
-void int_read_variable(integer **int_loc, int *size, int *capacity, char *name);
-void int_print_variable(integer *int_loc, int size, char *name);
-void int_update_variable(integer *int_loc, int size, char *name, int new_value);
+void int_print_variable(integer *int_loc, int size, char *name,int scope);
+void int_update_variable(integer *int_loc, int size, char *name, int new_value,int scope);
 void int_delete_variable(integer *int_loc, int *size, char *name);
-integer* int_display_variables(integer *int_loc, int size);
+void int_display_variables(integer *int_loc, int size);
 
 // Arithmetic functions
 int int_add(int a, int b);
