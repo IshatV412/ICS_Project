@@ -13,6 +13,15 @@ typedef struct{
     node_C_C *start; //stores the address of the first location of the dictionary
 }dictionary_C_C;
 
+typedef struct {
+    dictionary_C_C** dicts;
+    int dict_size;
+    int dict_capacity;
+}dictionary_vector;
+
+void initialise_dict_storage(dictionary_vector** dict_storage);
+ 
+
 void increase_len(dictionary_C_C *dict, int len);
 
 dictionary_C_C* create_dictionary_C_C(int len, char name[50]);
