@@ -12,8 +12,8 @@ typedef struct {
 
 void init_intlist_storage();
 void increase_intlist_capacity();
-void add_intlist_variable(const char *name, int size, int init_val, int scope);
-intlist* get_intlist_variable(const char *name, int current_scope);
+void add_intlist_variable(char *name, int size, int init_val, int scope);
+intlist* get_intlist_variable(char *name, int current_scope);
 void update_intlist_element_ptr(intlist *lst, int index, int value);
 void delete_intlist_variable_ptr(intlist *lst);
 void display_intlist_variables();
