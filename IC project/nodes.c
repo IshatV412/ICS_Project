@@ -3,27 +3,25 @@
 #include <string.h>
 #include <math.h>
 
-#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_boolean.h"
-#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_character.h"
-#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_dictionary.h"
-#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_float.h"
-#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_int_list.h"
-#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_integers.h"
-#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_linked_list.h"
-#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_string.h"
-#include "tree.h"
-extern int yyparse();
+#include "boolean.h"
+#include "character.h"
+#include "dictionary.h"
+#include "float.h"
+#include "float.h"
+#include "int_list.h"
+#include "integers.h"
+#include "linked_list.h"
 
 #define MAX_VAR_LENGTH 1024
 #define MAX_CHAR_VALUE 1024
 
-// struct treeNode{
-//     char type[20]; //stores the node type like assignment,declaration,etc
-//     char value[50]; //stores the value of the node
-//     struct treeNode* left; //point to the left branch in the tree
-//     struct treeNode* right; //point to the right branch in the tree
-//     struct treeNode* next; //next statement in the sequence
-// };
+struct treeNode{
+    char type[20]; //stores the node type like assignment,declaration,etc
+    char value[50]; //stores the value of the node
+    struct treeNode* left; //point to the left branch in the tree
+    struct treeNode* right; //point to the right branch in the tree
+    struct treeNode* next; //next statement in the sequence
+};
 //function to create a node for the tree
 // struct treeNode* createNode(char type[], char value[], struct treeNode* left, struct treeNode* right, struct treeNode* next) {
 //     struct treeNode* newNode = (struct treeNode*)malloc(sizeof(struct treeNode));
@@ -45,6 +43,14 @@ extern int yyparse();
 //     return newNode;
 // }
 
+struct treeNode* gotonode(struct treeNode* root, struct treeNode* ptr, int depth){
+    ptr = root;
+    ptr = ptr->left;
+    for (int i=0; i<depth-1; i++){
+        ptr = ptr->next;
+    }  
+    return ptr; 
+}
 struct Function {
     char name[MAX_VAR_LENGTH];
     struct treeNode* parameters;
@@ -60,13 +66,13 @@ int hasReturned = 0;
 
 float eval_expr(struct treeNode* ptr){
     // Evaluate left and right subtrees
-    // float left = convert(ptr->left);
+    float left = convert(ptr->left);
     if (strcmp(ptr->type, "INT")==0||strcmp(ptr->type, "FLOAT")==0||strcmp(ptr->type, "CHAR")==0) {
         // Leaf node with integer value
         return atof(ptr->value);
     }
     float left = eval_expr(ptr->left);
-    float right = eval_expr(ptr->right);
+    float right = eval_exptr(ptr->right);
 
     // update functionality from file 
     if (strcmp(ptr->type, "ADD") == 0) {
@@ -100,27 +106,8 @@ float eval_expr(struct treeNode* ptr){
     return 0; // fallback
 }
 
-// //Boolean
-// struct boolean* bool_loc;
-// int bool_capacity = 1;  // Initial storage capacity
-// int bool_size = 0;  // Number of currently stored variables
-// bool_loc = NULL;
-// // bool_init_storage(bool_loc, bool_capacity);
-
-// // Character
-// int *char_capacity;
-// int *char_size;
-// character **char_loc = NULL;
-// init_char_storage(char_loc, char_capacity, char_size);
-// // Dictionary
-// // Float
-// // int_list
-// // integers
-// // linked_list
-// // string
-
 int executeTree(struct treeNode* root, int scope) { //scope starts at 0
-    printf("Node");
+
     struct treeNode* ptr = root;
     int current_depth = 0;// determines the level of the tree where i am at.
     //int scope=0;// scope is incremented everytime block is encountered and vice versa
@@ -149,10 +136,10 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
                 // Store in the appropriate data structure
             }
             else if (strcmp(ptr->left->type, "list") == 0) {
-                add_intlist_variable(ptr->left->value, atoi(ptr->right->value), 0, scope);
+                add_intlist_variable(ptr->left->value, ptr->right, 0, scope);
             }
             else if (strcmp(ptr->left->type, "dictionary") == 0) {
-                create_dictionary_C_C(1, ptr->value, scope);
+                add_dict_C_C(1, ptr->value, scope);
             }
             else if (strcmp(ptr->left->type, "linkedlist") == 0) {
                 // Initialize linked list variable
@@ -162,19 +149,56 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "SHOW") == 0) {
-
+            struct treeNode* ptr1 = ptr->left;
+            char c[1000] = ptr->left->value;
+            for(int i=0; c[i]!='\0';i++){
+                if(c[i]=='\\' && c[i+1]=='n'){
+                    printf("\n");
+                    i++;
+                }
+                else if(c[i]=='\\' && c[i+1]=='t'){
+                    printf("\t");
+                    i++;
+                }
+                else if(c[i]=='%' && c[i+1] == 'd'){
+                    printf("%d", (get_int_var(ptr1,scope))->int_value);
+                    ptr1 = ptr1->next;
+                }
+                else if(c[i]=='%' && c[i+1] == 'f'){
+                    printf("%f", (get_float_variable(ptr1,scope))->value);
+                    ptr1 = ptr1->next;
+                }
+                else if(c[i]=='%' && c[i+1] == 'c'){
+                    printf("%c", (get_char_variable(ptr1,scope))->value);
+                    ptr1 = ptr1->next;
+                }
+                else{
+                    printf("%c",c[i]);
+                }
+            }
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASK") == 0) {
+            if(strcmp(ptr->value,"integer")==0){
+                scanf("%d", &(get_int_var(ptr->left->value,scope)->int_value));
+            }
+            else if(strcmp(ptr->value,"float")==0){
+                scanf("%f", &(get_float_variable(ptr->left->value,scope)->value));
+            }
+            else if(strcmp(ptr->value,"character")==0){
+                char c[MAX_CHAR_VALUE];
+                scanf("%s", c);
+                add_char_variable(ptr->left->value, c[0], scope);
+            }
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "ASSIGN") == 0) {
             if(strcmp(ptr->left->type,"INDEX")==0){
-                update_intlist_element_ptr(get_intlist_variable(ptr->left->value,scope), atoi(ptr->left->left->value), atoi(ptr->right->value));
+                update_intlist_element_ptr(get_intlist_variable(ptr->left->value,scope), ptr->left->left, ptr->right);
             }
-            // else if(strcmp(ptr->left->type,"LL_GET")==0){
-            //     int_update_variable(get_int_var(ptr->value,scope),read_node(get_list_by_name_scope(ptr->left->value,scope),ptr->left->left));
-            // }
+            else if(strcmp(ptr->left->type,"LL_GET")==0){
+                int_update_variable(get_int_var(ptr->value,scope),read_node(get_list_by_name_scope(ptr->left->value,scope),ptr->left->left));
+            }
             else if(strcmp(ptr->left->type,"CALL")==0){
                 //call
             }
@@ -214,7 +238,23 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
             }
         }
         else if (strcmp(ptr->type, "FOR") == 0) {
-            //
+            // Initialize loop variable
+            struct treeNode* initNode = ptr->left;
+            int_add_variable(get_int_var(initNode->value, scope), eval_expr(initNode->left), scope);
+            if (initNode != NULL) {
+                int_update_variable(get_int_var(initNode->value, scope), eval_expr(initNode->left));
+            }
+            // Loop condition
+            float val = eval_expr(ptr->left->next);
+            while (val) {
+                executeTree(ptr->right, scope++);
+                // Update loop variable
+                struct treeNode* updateNode = ptr->left->next->next;
+                if (updateNode != NULL) {
+                    int_update_variable(get_int_var(updateNode->value, scope), eval_expr(updateNode->left));
+                }
+                val = eval_expr(ptr->left->next);
+            }
         }
         else if (strcmp(ptr->type, "NEXT") == 0) {
             executeTree(ptr->next,scope--);
@@ -223,70 +263,72 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
         else if (strcmp(ptr->type, "LEAVE") == 0) {
             return 1;
         }
-        // else if (strcmp(ptr->type, "FUNC_DEC") == 0) {
-        //     struct Function newFunc;
-        //     strncpy(newFunc.name, ptr->value, MAX_VAR_LENGTH);
-        //     struct treeNode* funcData = ptr->left;   // This contains FUNC_DATA and RET_TYPE
-        //     newFunc.body = ptr->right;               // Function body (block) is in the right field
+        else if (strcmp(ptr->type, "FUNC_DEC") == 0) {
+            struct Function newFunc;
+            strncpy(newFunc.name, ptr->value, MAX_VAR_LENGTH);
+            struct treeNode* funcData = ptr->left;   // This contains FUNC_DATA and RET_TYPE
+            newFunc.body = ptr->right;               // Function body (block) is in the right field
         
-        //     while (funcData != NULL) {
-        //         if (strcmp(funcData->type, "FUNC_DATA") == 0) {
-        //             newFunc.parameters = funcData->left; // Parameters list
-        //         } else if (strcmp(funcData->type, "RET_TYPE") == 0) {
-        //             strncpy(newFunc.returnType, funcData->value, 20);
-        //         }
-        //         funcData = funcData->next;
-        //     }
+            while (funcData != NULL) {
+                if (strcmp(funcData->type, "FUNC_DATA") == 0) {
+                    newFunc.parameters = funcData->left; // Parameters list
+                } else if (strcmp(funcData->type, "RET_TYPE") == 0) {
+                    strncpy(newFunc.returnType, funcData->value, 20);
+                }
+                funcData = funcData->next;
+            }
         
-        //     functionTable[functionCount++] = newFunc;
-        //     executeTree(ptr->next,scope);
-        // }
-        // else if (strcmp(ptr->type, "RETURN") == 0) {
-        //     if (ptr->left != NULL) {
-        //         returnValue = eval_expr(ptr->left);
-        //         hasReturned = 1;
-        //     }
-        // }
-        // else if (strcmp(ptr->type, "CALL") == 0) {
-        //     struct Function* calledFunc = NULL;
+            functionTable[functionCount++] = newFunc;
+            executeTree(ptr->next,scope);
+        }
+        else if (strcmp(ptr->type, "RETURN") == 0) {
+            if (ptr->left != NULL) {
+                returnValue = eval_expr(ptr->left);
+                hasReturned = 1;
+            }
+            return; 
+        }
+        else if (strcmp(ptr->type, "CALL") == 0) {
+            struct Function* calledFunc = NULL;
         
-        //     for (int i = 0; i < functionCount; i++) {
-        //         if (strcmp(functionTable[i].name, ptr->value) == 0) {
-        //             calledFunc = &functionTable[i];
-        //             break;
-        //         }
-        //     }
-        //     if (calledFunc == NULL) {
-        //         fprintf(stderr, "Function not found: %s\n", ptr->value);
-        //         ptr = ptr->next;
-        //         return;
-        //     }
-        //     // Argument passing
-        //     struct treeNode* argNode = ptr->left;
-        //     struct treeNode* paramNode = calledFunc->parameters;
+            for (int i = 0; i < functionCount; i++) {
+                if (strcmp(functionTable[i].name, ptr->value) == 0) {
+                    calledFunc = &functionTable[i];
+                    break;
+                }
+            }
+            if (calledFunc == NULL) {
+                fprintf(stderr, "Function not found: %s\n", ptr->value);
+                ptr = ptr->next;
+                return;
+            }
+            // Argument passing
+            struct treeNode* argNode = ptr->left;
+            struct treeNode* paramNode = calledFunc->parameters;
         
-        //     while (argNode && paramNode) {
-        //         float val = eval_expr(argNode);
-        //         // This sets the function parameter as a local variable
-        //         //some function to initialise functions for the functions and assigning them values of the arguments we passed
-        //         argNode = argNode->next;
-        //         paramNode = paramNode->next;
-        //     }
+            while (argNode && paramNode) {
+                float val = eval_expr(argNode);
+                // This sets the function parameter as a local variable
+                //some function to initialise functions for the functions and assigning them values of the arguments we passed
+                argNode = argNode->next;
+                paramNode = paramNode->next;
+            }
         
-        //     if (argNode || paramNode) {
-        //         fprintf(stderr, "Argument count mismatch in function call: %s\n", ptr->value);
-        //         ptr = ptr->next;
-        //         return;
-        //     }
+            if (argNode || paramNode) {
+                fprintf(stderr, "Argument count mismatch in function call: %s\n", ptr->value);
+                ptr = ptr->next;
+                return;
+            }
         
-        //     // Execute function body
-        //     hasReturned = 0;
-        //     executeTree(calledFunc->body,scope++);
+            // Execute function body
+            hasReturned = 0;
+            executeTree(calledFunc->body,scope++);
         
-        //     // Optionally use returnValue here
-        //     float result = returnValue;
+            // Optionally use returnValue here
+            float result = returnValue;
         
-        //     ptr = ptr->next;
+            ptr = ptr->next;
+        }
         else if (strcmp(ptr->type, "LL_SORT") == 0) {
             ptr = ptr->next;
         }
@@ -305,18 +347,6 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
         else if (strcmp(ptr->type, "LL_GET") == 0) {
             // used inside ptressions or assignments
             ptr = ptr->next;
-        }
-        else if (strcmp(ptr->type, "DICT_SET") == 0) {
-
-        }
-        else if (strcmp(ptr->type, "DICT_INSERT") == 0) {
-
-        }
-        else if (strcmp(ptr->type, "DICT_DEL") == 0) {
-
-        }
-        else if (strcmp(ptr->type,"DICT_GET") == 0) {
-
         }
         else if (strcmp(ptr->type, "BLOCK") == 0) {
             scope++;
@@ -351,21 +381,5 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
 
         current_depth++;
     }
-    return 0;
-}
-
-int main() {
-    yyparse(); // this builds the AST
-    treeNode* root = getAST(); // retrieve from tree.c
-    printf("1");
-    init_char_storage();
-    printf("1");
-    bool_init_storage();
-    printf("1");
-    init_float_storage();
-    init_intlist_storage();
-    int_init_storage();
-    init_string_storage();
-    executeTree(root,0);
     return 0;
 }
