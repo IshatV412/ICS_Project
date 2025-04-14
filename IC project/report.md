@@ -24,8 +24,14 @@
 
 
 ### 2.2 Tic Tac Toe Bot
+- Minimax is a recursive decision-making algorithm used in two-player games like Tic-Tac-Toe. It simulates all possible moves, alternating between:
 
+  1. Maximizing player (usually the AI), who tries to get the highest score.
 
+  2. Minimizing player (usually the human), who tries to reduce the AI's score.
+
+- The minimax function implemented in our code only searches one move ahead.
+- It only maximizes the AI input and doesn'tfocus on minimizing user input
 
 
 
