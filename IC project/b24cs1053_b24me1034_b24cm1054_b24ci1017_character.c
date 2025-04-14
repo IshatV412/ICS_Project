@@ -11,15 +11,14 @@ character *char_loc = NULL;
 // Function to initialize storage
 void init_char_storage() {
     if (char_loc == NULL) {
-        printf("Error: Attempt to resize uninitialized storage.\n");
-        exit(1);
+        char_loc = (character*)malloc(char_capacity * sizeof(character));
+        if (char_loc == NULL) {
+            printf("Character Vector Storage Allocation Failed.\n");
+            exit(1);
+        }
     }
-    char_loc = (character*)malloc(char_capacity * sizeof(character));
-    if (char_loc == NULL) {
-        printf("Character Vector Storage Allocation Failed.\n");
-        exit(1);
-    }    
-}    
+}
+
 
 // Function to resize storage when needed
 void increase_char_capacity() {
