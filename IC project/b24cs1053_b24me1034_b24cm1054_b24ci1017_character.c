@@ -71,6 +71,7 @@ void add_char_variable(char *name, char value, int scope) {
     strcpy(char_loc[char_size].name, name);
     char_loc[char_size].value = value;
     char_loc[char_size].scope = scope;
+    char_size++;
 }
 
 // Function to update value via pointer
