@@ -72,6 +72,9 @@ float eval_expr(struct treeNode* ptr){
         // Leaf node with integer value
         return atof(ptr->value);
     }
+    else if (strcmp(ptr->type,"VAR") == 0) {
+        return (float)(get_int_var(ptr->value,1)->int_value);
+    }
     float left = eval_expr(ptr->left);
     float right = eval_expr(ptr->right);
 
@@ -228,7 +231,7 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
             executeTree(ptr->next,scope);
         }
         else if (strcmp(ptr->type, "IF-ELSE") == 0) {
-            if(eval_expr(ptr->left->left) == 1){
+            if(eval_expr(ptr->left->left) == 1.0){
                 if(!executeTree(ptr->left->right,scope++)){
                     executeTree(ptr->next,scope);
                 }
