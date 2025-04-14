@@ -108,37 +108,33 @@ float eval_expr(struct treeNode* ptr){
 }
 
 int executeTree(struct treeNode* root, int scope) { //scope starts at 0
-
     struct treeNode* ptr = root;
     int current_depth = 0;// determines the level of the tree where i am at.
     //int scope=0;// scope is incremented everytime block is encountered and vice versa
 
     if (ptr != NULL) {
         if (strcmp(ptr->type, "VAR_DEC") == 0) {
-            if(strcmp(ptr->left->type, "integer") == 0) {
-                //int_add_variable(ptr->left->value, 0, scope);
-            } else if (strcmp(ptr->left->type, "float") == 0) {
-                // Initialize float variable
-                add_float_variable(ptr->left->value, 0.00, scope);
+            if(strcmp(ptr->left->value, "integer") == 0) {
+                int_add_variable(ptr->value, scope, 0);
+            } else if (strcmp(ptr->left->value, "float") == 0) {
+                add_float_variable(ptr->value, 0.00, scope);
                 // Store in the appropriate data structure
-            } else if (strcmp(ptr->left->type, "character") == 0) {
+            } else if (strcmp(ptr->left->value, "character") == 0) {
                 // Initialize character variable
-                add_char_variable(ptr->left->value, 'a', scope);
+                add_char_variable(ptr->value, 'a', scope);
             }
-            else if (strcmp(ptr->left->type, "boolean") == 0) {
+            else if (strcmp(ptr->left->value, "boolean") == 0) {
                 // Initialize boolean variable
-                bool_add_variable(ptr->left->value, 0, scope);
+                bool_add_variable(ptr->value, 0, scope);
                 // Store in the appropriate data structure
             }
-            else if (strcmp(ptr->left->type, "string") == 0) {
+            else if (strcmp(ptr->left->value, "string") == 0) {
                 // Initialize string variable
                 char *s = "a";
                 //add_string_variable(s,s,scope);
                 // Store in the appropriate data structure
             }
-            else if (strcmp(ptr->left->type, "list") == 0) {
-                add_intlist_variable(ptr->left->value, atoi(ptr->right->value), 0, scope);
-            }
+            
             // else if (strcmp(ptr->left->type, "dictionary") == 0) {
             //     add_dict_C_C(1, ptr->value, scope);
             // }
@@ -149,11 +145,15 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
             
             executeTree(ptr->next,scope);
         }
+        else if (strcmp(ptr->type,"LIST_DEC") == 0) {
+            add_intlist_variable(ptr->value, atoi(ptr->right->value), 0, scope);
+        }
         else if (strcmp(ptr->type, "SHOW") == 0) {
             struct treeNode* ptr1 = ptr->left;
             char c[1000]; 
-            strcpy(c,ptr->left->value);
+            strcpy(c, ptr->value);
             for(int i=0; c[i]!='\0';i++){
+                if (ptr1 == NULL) {
                 if(c[i]=='\\' && c[i+1]=='n'){
                     printf("\n");
                     i++;
@@ -162,21 +162,28 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
                     printf("\t");
                     i++;
                 }
-                else if(c[i]=='%' && c[i+1] == 'd'){
+                else{
+                    printf("%c",c[i]);
+                }
+            }
+                else {
+             if(c[i]=='%' && c[i+1] == 'd'){
                     printf("%d", (get_int_var(ptr1->value,scope))->int_value);
                     ptr1 = ptr1->next;
+                    i++;
                 }
                 else if(c[i]=='%' && c[i+1] == 'f'){
                     printf("%f", (get_float_variable(ptr1->value,scope))->value);
                     ptr1 = ptr1->next;
+                    i++;
                 }
                 else if(c[i]=='%' && c[i+1] == 'c'){
                     printf("%c", (get_char_variable(ptr1->value,scope))->value);
                     ptr1 = ptr1->next;
+                    i++;
                 }
-                else{
-                    printf("%c",c[i]);
-                }
+            }
+                
             }
             executeTree(ptr->next,scope);
         }
@@ -387,15 +394,10 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
 }
 
 int main() {
-    int temp;
-    scanf("%d",&temp);
     yyparse(); // this builds the AST
     treeNode* root = getAST(); // retrieve from tree.
-    printf("1");
     init_char_storage();
-    printf("1");
     bool_init_storage();
-    printf("1");
     init_float_storage();
     init_intlist_storage();
     int_init_storage();
