@@ -29,7 +29,7 @@ void increase_string_capacity() {
 
 // Add new string variable
 // Add new string variable (initializes storage if needed)
-void add_string_variable(char *name, char *value, int scope) {
+/*void add_string_variable(char *name, char *value, int scope) {
     // Initialize storage if not already done
     if (string_loc == NULL) {
         string_loc = (string*) malloc(string_capacity * sizeof(string));
@@ -60,7 +60,30 @@ void add_string_variable(char *name, char *value, int scope) {
     string_loc[string_size].scope = scope;
     string_size++;
 }
+*/
+void add_string_variable(char *name, char *value, int scope) {
+    // Check for duplicate in the same scope
+    for (int i = 0; i < string_size; i++) {
+        if (strcmp(string_loc[i].name, name) == 0 && string_loc[i].scope == scope) {
+            exit(1);
+        }
+    }
 
+    // Resize if necessary
+    if (string_size == string_capacity) {
+        increase_string_capacity();
+    }
+
+    // Add new variable
+    strncpy(string_loc[string_size].name, name, sizeof(string_loc[string_size].name) - 1);
+    string_loc[string_size].name[sizeof(string_loc[string_size].name) - 1] = '\0';
+
+    strncpy(string_loc[string_size].value, value, MAX_STRING_LENGTH - 1);
+    string_loc[string_size].value[MAX_STRING_LENGTH - 1] = '\0';  // Terminator
+
+    string_loc[string_size].scope = scope;
+    string_size++;
+}
 // Find string variable by name and highest available scope
 string* get_string_variable(char *name, int current_scope) {
     string *result = NULL;
