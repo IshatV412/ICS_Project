@@ -1,7 +1,7 @@
 # Custom Language Project
 
 ## Overview
-The language supports variable declarations, arithmetic operations, conditional statements, loops, functions, and data structures like linked lists and dictionaries. It uses a parser built with Bison to generate an Abstract Syntax Tree (AST), which is then executed to evaluate expressions and perform operations.
+The language supports variable declarations, arithmetic operations, conditional statements, loops, functions. Data structures like linked lists and dictionaries are also to be added further. It uses a parser built with Bison to generate an Abstract Syntax Tree (AST), which is then executed to evaluate expressions and perform operations.
 
 ---
 
