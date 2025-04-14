@@ -97,9 +97,9 @@ void int_add_variable(char *name, int scope, int value) {
 void int_update_variable(int_var *var, int new_value) {
     if (var) {
         var->int_value = new_value;
-        printf("Updated %s to %d\n", var->int_name, new_value);
+        //printf("Updated %s to %d\n", var->int_name, new_value);
     } else {
-        printf("Variable not found.\n");
+        //printf("Variable not found.\n");
     }
 }
 
