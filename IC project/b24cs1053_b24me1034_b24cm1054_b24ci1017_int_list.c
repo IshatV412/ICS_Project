@@ -36,7 +36,7 @@ void increase_intlist_capacity() {
 }
 
 // Add a new list
-void add_intlist_variable(const char *name, int size, int init_val, int scope) {
+void add_intlist_variable(char *name, int size, int init_val, int scope) {
     for (int i = 0; i < intlist_size; i++) {
         if (strcmp(intlist_loc[i].name, name) == 0 && intlist_loc[i].scope == scope) {
             printf("Variable with same name already exists within this scope.");
