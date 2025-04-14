@@ -3,14 +3,16 @@
 #include <string.h>
 #include <math.h>
 
-#include "boolean.h"
-#include "character.h"
-#include "dictionary.h"
-#include "float.h"
-#include "float.h"
-#include "int_list.h"
-#include "integers.h"
-#include "linked_list.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_boolean.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_character.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_dictionary.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_float.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_int_list.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_integers.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_linked_list.h"
+#include "b24cs1053_b24me1034_b24cm1054_b24ci1017_string.h"
+#include "tree.h"
+extern int yyparse();
 
 #define MAX_VAR_LENGTH 1024
 #define MAX_CHAR_VALUE 1024
@@ -381,5 +383,21 @@ int executeTree(struct treeNode* root, int scope) { //scope starts at 0
 
         current_depth++;
     }
+    return 0;
+}
+
+int main() {
+    yyparse(); // this builds the AST
+    treeNode* root = getAST(); // retrieve from tree.c
+    printf("1");
+    init_char_storage();
+    printf("1");
+    bool_init_storage();
+    printf("1");
+    init_float_storage();
+    init_intlist_storage();
+    int_init_storage();
+    init_string_storage();
+    executeTree(root,0);
     return 0;
 }
