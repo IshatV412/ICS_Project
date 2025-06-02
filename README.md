@@ -1,0 +1,1 @@
+Sqlite connectivity with python assignment. does CRUD operations
